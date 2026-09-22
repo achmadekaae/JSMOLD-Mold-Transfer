@@ -405,6 +405,88 @@ dialog .df{padding:12px 16px 14px; display:flex; gap:8px; justify-content:flex-e
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
+/* ─────────── batch input v24 ─────────── */
+.batch-dialog{
+  width:min(980px,calc(100vw - 24px));
+  max-width:980px;
+  max-height:calc(100vh - 28px);
+}
+.batch-dialog .dh{padding:16px 18px 8px;border-bottom:1px solid var(--line-soft)}
+.batch-dialog .dh h3{font-size:17px}
+.batch-dialog .batch-sub{margin-top:4px;color:var(--muted);font-size:12.5px}
+.batch-toolbar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+.batch-toolbar .field{min-width:190px;flex:1}
+.batch-seg{display:flex;gap:6px;flex-wrap:wrap}
+.batch-seg button{padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer;font-size:12.5px}
+.batch-seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.batch-body{padding:14px 18px;display:grid;gap:12px;max-height:calc(100vh - 250px);overflow:auto}
+.batch-banner{padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:var(--panel-2);font-size:12.5px;color:var(--muted)}
+.batch-banner.warn{border-color:color-mix(in srgb,var(--warn) 42%,var(--line));background:color-mix(in srgb,var(--warn) 8%,var(--panel));color:var(--warn)}
+.batch-banner.ok{border-color:color-mix(in srgb,var(--out) 42%,var(--line));background:var(--out-bg);color:var(--out)}
+.batch-panel{border:1px solid var(--line);border-radius:11px;background:var(--panel);overflow:hidden}
+.batch-panel-head{padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line-soft)}
+.batch-panel-head h4{margin:0;font-size:13.5px;font-weight:600;flex:1}
+.batch-panel-head span{font-size:11.5px;color:var(--muted)}
+.batch-form-toolbar{display:flex;gap:7px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+.batch-form-list{display:grid;gap:0}
+.batch-form-item{padding:10px 12px;border-bottom:1px solid var(--line-soft);display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;cursor:pointer}
+.batch-form-item:last-child{border-bottom:0}
+.batch-form-item:hover{background:var(--panel-2)}
+.batch-form-item.sel{background:color-mix(in srgb,var(--brand) 7%,var(--panel))}
+.batch-form-no{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line);font-size:12px;font-weight:700}
+.batch-form-main{min-width:0}
+.batch-form-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.batch-form-meta{margin-top:2px;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.batch-form-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.batch-status{font-size:11px;padding:4px 7px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.batch-status.valid{border-color:color-mix(in srgb,var(--out) 45%,var(--line));color:var(--out);background:var(--out-bg)}
+.batch-status.error{border-color:color-mix(in srgb,var(--warn) 50%,var(--line));color:var(--warn);background:color-mix(in srgb,var(--warn) 8%,var(--panel))}
+.batch-status.pending{border-color:color-mix(in srgb,var(--in) 50%,var(--line));color:var(--in);background:var(--in-bg)}
+.batch-table-wrap{overflow:auto}
+.batch-table{width:100%;border-collapse:separate;border-spacing:0;min-width:720px}
+.batch-table th,.batch-table td{padding:8px 9px;border-bottom:1px solid var(--line-soft);border-right:1px solid var(--line-soft);font-size:12px;text-align:left;vertical-align:top}
+.batch-table th:last-child,.batch-table td:last-child{border-right:0}
+.batch-table th{background:var(--panel-2);color:var(--muted);font-size:11px;font-weight:600;position:sticky;top:0;z-index:1}
+.batch-table tr{cursor:pointer}
+.batch-table tbody tr:hover{background:var(--panel-2)}
+.batch-table tbody tr.sel{background:color-mix(in srgb,var(--brand) 7%,var(--panel))}
+.batch-table tbody tr.err{background:color-mix(in srgb,var(--warn) 9%,var(--panel))}
+.batch-table td.error-cell{color:var(--warn);font-weight:600}
+.batch-paste-box{padding:12px}
+.batch-paste-help{font-size:11.5px;color:var(--muted);line-height:1.55;margin-bottom:8px}
+.batch-paste-input{width:100%;min-height:150px;resize:vertical;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}
+.batch-edit{padding:12px}
+.batch-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.batch-edit-grid .full{grid-column:1/-1}
+.batch-copy-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+.batch-copy-row .btn{font-size:11.5px;padding:6px 9px}
+.batch-edit-hint{font-size:11.5px;color:var(--muted);margin:0 0 10px}
+.batch-conflict{border:1px solid color-mix(in srgb,var(--warn) 55%,var(--line));border-radius:10px;background:color-mix(in srgb,var(--warn) 6%,var(--panel));padding:12px}
+.batch-conflict h4{margin:0 0 5px;font-size:13.5px}
+.batch-conflict p{margin:0 0 10px;font-size:12px;color:var(--muted)}
+.batch-conflict-table{max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.batch-conflict-row{display:grid;grid-template-columns:36px 1fr 1fr;gap:8px;padding:8px;border-bottom:1px solid var(--line-soft);font-size:11.5px}
+.batch-conflict-row:last-child{border-bottom:0}
+.batch-conflict-row b{font-size:11px}
+.batch-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:space-between;padding:12px 18px 14px;border-top:1px solid var(--line-soft)}
+.batch-footer .left,.batch-footer .right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.batch-sync{font-size:11.5px;color:var(--muted)}
+.batch-after-save{padding:12px;border:1px solid color-mix(in srgb,var(--out) 42%,var(--line));border-radius:10px;background:var(--out-bg)}
+.batch-after-save b{display:block;font-size:13px;margin-bottom:3px}
+.batch-after-save span{font-size:11.5px;color:var(--muted)}
+.batch-empty{padding:18px 12px;text-align:center;color:var(--muted);font-size:12.5px}
+.batch-dialog.readonly .batch-edit input,
+.batch-dialog.readonly .batch-edit select{opacity:.7}
+@media(max-width:700px){
+  .batch-dialog{width:calc(100vw - 12px);max-height:calc(100vh - 12px);border-radius:12px}
+  .batch-body{padding:10px 10px 12px;max-height:calc(100vh - 220px)}
+  .batch-toolbar,.batch-footer{padding-left:10px;padding-right:10px}
+  .batch-edit-grid{grid-template-columns:1fr}
+  .batch-edit-grid .full{grid-column:auto}
+  .batch-form-item{grid-template-columns:32px minmax(0,1fr)}
+  .batch-form-actions{grid-column:2;justify-content:flex-start}
+}
+
 /* ─────────── responsive ─────────── */
 @media (max-width:1000px){
   .layout{grid-template-columns:1fr}
@@ -1561,7 +1643,7 @@ body.capturing .sheet{box-shadow:none}
       <div class="grid7" id="dowRow" style="margin-top:8px"></div>
       <div class="grid7" id="calGrid" style="margin-top:2px"></div>
       <div class="legend" style="margin-top:10px">
-        <span><i class="d"></i>Delivery</span><span><i class="p"></i>Pick up</span><span><i class="n"></i>Nihil</span>
+        <span><i class="d"></i>Delivery</span><span><i class="p"></i>Pick up</span><span><i class="n"></i>Konfirmasi tim</span>
       </div>
     </div>
 
@@ -1628,7 +1710,8 @@ body.capturing .sheet{box-shadow:none}
       <div class="acts">
         <button class="btn out" id="addDel"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Delivery</button>
         <button class="btn inn" id="addPick"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Pick up</button>
-        <button class="btn" id="markNihil">Tandai nihil</button>
+        <button class="btn solid" id="batchInputBtn"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Batch Input</button>
+        <button class="btn" id="teamConfirmBtn">Konfirmasi Tim</button>
         <button class="btn solid" id="printBtn"><svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Cetak</button>
         <button class="btn" id="shareImgBtn"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>JPEG</button>
       </div>
@@ -1777,6 +1860,136 @@ body.capturing .sheet{box-shadow:none}
 
 <div id="toasts"></div>
 
+
+<dialog id="batchDialog" class="batch-dialog">
+  <div class="dh">
+    <h3>Batch Input Delivery / Pickup</h3>
+    <div class="batch-sub">Maksimal 10 item · isi beberapa Delivery / Pickup sekaligus, lalu simpan item yang valid ke lembar.</div>
+  </div>
+
+  <div class="batch-toolbar">
+    <div class="field">
+      <label>Jenis transaksi</label>
+      <div class="batch-seg" id="batchKindSeg">
+        <button type="button" data-kind="delivery" aria-pressed="true">Delivery</button>
+        <button type="button" data-kind="pickup" aria-pressed="false">Pickup</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Metode input</label>
+      <div class="batch-seg" id="batchMethodSeg">
+        <button type="button" data-method="form" aria-pressed="true">Form berulang</button>
+        <button type="button" data-method="paste" aria-pressed="false">Paste Excel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="batch-body">
+    <div class="batch-banner" id="batchStatusBanner">Batch siap digunakan.</div>
+
+    <div class="batch-panel" id="batchFormPanel">
+      <div class="batch-panel-head">
+        <h4>Daftar item</h4>
+        <span id="batchCountLabel">0 / 10 item</span>
+      </div>
+      <div class="batch-form-toolbar">
+        <button type="button" class="btn" id="batchAdd1">+ 1 baris</button>
+        <button type="button" class="btn" id="batchAdd5">+ 5 baris</button>
+        <button type="button" class="btn" id="batchClearRows">Kosongkan item</button>
+      </div>
+      <div id="batchFormList" class="batch-form-list"></div>
+    </div>
+
+    <div class="batch-panel" id="batchPastePanel" hidden>
+      <div class="batch-panel-head">
+        <h4>Paste dari Excel</h4>
+        <span>Header atau urutan kolom didukung</span>
+      </div>
+      <div class="batch-paste-box">
+        <div class="batch-paste-help">
+          Format header yang dikenali: <b>Mold ID</b>, <b>Mold Name</b>, <b>Area</b>, <b>Company Name</b>.<br>
+          Tanpa header, urutan yang digunakan: <b>Mold ID → Mold Name → Area → Company Name</b>.
+        </div>
+        <textarea id="batchPasteInput" class="batch-paste-input" placeholder="Paste 1–10 baris dari Excel di sini…"></textarea>
+        <div class="batch-form-toolbar" style="padding:10px 0 0;border:0;background:transparent">
+          <button type="button" class="btn solid" id="batchParsePaste">Tambahkan hasil paste</button>
+          <button type="button" class="btn" id="batchClearPaste">Bersihkan</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="batch-panel" id="batchPreviewPanel">
+      <div class="batch-panel-head">
+        <h4>Preview tabel</h4>
+        <span id="batchPreviewSummary">0 valid · 0 perlu diperbaiki</span>
+      </div>
+      <div class="batch-table-wrap" id="batchPreviewWrap"></div>
+    </div>
+
+    <div class="batch-panel" id="batchEditPanel">
+      <div class="batch-panel-head">
+        <h4 id="batchEditTitle">Edit item</h4>
+        <span id="batchEditStatus">Pilih satu baris</span>
+      </div>
+      <div class="batch-edit">
+        <p class="batch-edit-hint" id="batchEditHint">Pilih baris pada preview, lalu edit melalui form ini.</p>
+        <div class="batch-edit-grid">
+          <div class="field">
+            <label for="batchEditArea">Area</label>
+            <input id="batchEditArea" autocomplete="off">
+            <div class="batch-copy-row"><button type="button" class="btn" id="batchCopyArea">Salin Area sebelumnya</button></div>
+          </div>
+          <div class="field">
+            <label for="batchEditCompany">Company Name</label>
+            <input id="batchEditCompany" autocomplete="off">
+            <div class="batch-copy-row"><button type="button" class="btn" id="batchCopyCompany">Salin Company sebelumnya</button></div>
+          </div>
+          <div class="field">
+            <label for="batchEditMoldId">Mold ID</label>
+            <input id="batchEditMoldId" autocomplete="off" list="batchMoldIds">
+            <datalist id="batchMoldIds"></datalist>
+            <div class="batch-field-hint">Ketik Mold ID langsung. Jika ditemukan di master, Mold Name akan terisi otomatis.</div>
+          </div>
+          <div class="field">
+            <label for="batchEditMoldName">Mold Name (opsional)</label>
+            <input id="batchEditMoldName" autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="batchAfterSave" class="batch-after-save" hidden>
+      <b id="batchAfterSaveTitle">Batch berhasil diproses</b>
+      <span id="batchAfterSaveSub">Pilih apakah ingin tetap di Batch Input atau kembali ke form utama.</span>
+      <div class="batch-form-toolbar" style="padding:10px 0 0;border:0;background:transparent">
+        <button type="button" class="btn" id="batchStayBtn">Tetap di Batch Input</button>
+        <button type="button" class="btn solid" id="batchReturnBtn">Kembali ke Form Utama</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="batch-footer">
+    <div class="left">
+      <button type="button" class="btn" id="batchDeleteDraft">Hapus Draft</button>
+    </div>
+    <div class="right">
+      <button type="button" class="btn" id="batchCloseBtn">Tutup</button>
+      <button type="button" class="btn solid" id="batchSaveBtn">Simpan Batch Valid</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="batchManualConfirmDialog">
+  <div class="dh"><h3>Konfirmasi input manual</h3><p id="batchManualConfirmSub">Mold ID tidak ditemukan di master data.</p></div>
+  <div class="db">
+    <div class="batch-banner warn" id="batchManualConfirmBox"></div>
+  </div>
+  <div class="df">
+    <button type="button" class="btn" id="batchManualCancel">Batal</button>
+    <button type="button" class="btn solid" id="batchManualAccept">Izinkan manual</button>
+  </div>
+</dialog>
+
 <dialog id="rowDialog">
   <form method="dialog">
     <div class="dh"><h3 id="rdTitle">Item</h3><p id="rdSub">Isi detail mold</p></div>
@@ -1815,7 +2028,7 @@ body.capturing .sheet{box-shadow:none}
       <p id="remSub">—</p>
     </div>
     <div class="df">
-      <button class="btn" value="none" type="submit">Tidak ada</button>
+      <button class="btn" value="confirm" type="submit">Konfirmasi tim</button>
       <button class="btn" value="later" type="submit">Nanti saja</button>
       <button class="btn solid" value="open" type="submit">Isi sekarang</button>
     </div>
@@ -1826,7 +2039,9 @@ body.capturing .sheet{box-shadow:none}
   <form method="dialog">
     <div class="dh"><h3>Verifikasi member</h3><p>Masukkan nama lengkap sesuai daftar member engineering.</p></div>
     <div class="db">
-      <div class="field"><label for="f_myname">Nama lengkap</label><input id="f_myname" autocomplete="off" placeholder="mis. Achmad Eka"></div>
+      <div class="field"><label for="f_myname">Nama / user</label><input id="f_myname" autocomplete="username" placeholder="mis. Eka"></div>
+      <div class="field"><label for="f_mypass">Password</label><input id="f_mypass" type="password" autocomplete="current-password" placeholder="Masukkan password"></div>
+      <div class="batch-field-hint" id="loginHint">Masukkan user dan password yang terdaftar.</div>
     </div>
     <div class="df"><button class="btn solid" value="save" type="submit">Mulai</button></div>
   </form>
@@ -1880,33 +2095,42 @@ function randomRowId(){
 
 function stableLegacyRowId(kind,dateKey,index,r){
   /*
-    Legacy rows did not have an ID. Build a deterministic ID from the
-    row's meaningful content so every browser derives the same ID until
-    the first successful save writes the new _id back to Firestore.
+    Legacy rows did not originally contain _id.
+    The identity is based on meaningful content, not array position.
+    Therefore inserting a row above does not rename existing rows.
   */
   r=r||{};
   var sig=[
-    kind,dateKey,index,
-    String(r.area||"").trim(),
-    String(r.company||"").trim(),
-    String(r.pic||"").trim(),
-    String(r.moldId||"").trim(),
-    String(r.moldName||"").trim(),
-    String(r.status||"").trim(),
-    String(r.note||"").trim(),
-    String(r.reasonType||"").trim()
+    kind,dateKey,
+    String(r.area||"").trim().toUpperCase(),
+    String(r.company||"").trim().toUpperCase(),
+    String(r.pic||"").trim().toUpperCase(),
+    String(r.moldId||"").trim().toUpperCase(),
+    String(r.moldName||"").trim().toUpperCase(),
+    String(r.status||"").trim().toLowerCase(),
+    String(r.note||"").trim().toUpperCase(),
+    String(r.reasonType||"").trim().toUpperCase()
   ].join("|");
+
   var hash=0;
   for(var i=0;i<sig.length;i++){
     hash=((hash<<5)-hash)+sig.charCodeAt(i);
     hash|=0;
   }
+
   return "legacy_"+kind+"_"+Math.abs(hash).toString(36);
 }
 
-function newRow(){
+function newRow(owner,seq){
   var r=Object.assign({},EMPTY_ROW);
   r._id=randomRowId();
+  if(owner){
+    r._owner=owner;
+    r._ownerOrder=ownerOrder(owner);
+    r._seq=Number(seq)||1;
+    r._createdAt=Date.now();
+    r._storage="owner";
+  }
   return r;
 }
 
@@ -1940,12 +2164,16 @@ var state={
   baseSheet:blank(today),
   index:{},          // dateKey -> {d,p,nihil,updatedAt,updatedByName,updatedByUid}
   me:{id:null,name:"",fullName:"",role:""},
-  canWrite:true,
+  canWrite:false,
   db:null,
   feed:[], lastSeen:+lsGet("jsmold:lastSeen",0)||0,
   mobile:window.matchMedia("(max-width: 900px)").matches,
-  dirty:false, saving:false, pending:false, pendingRemote:null,
-  dashboardDocs:{}, dashboardReady:false, dashboardUnsub:null, dashboardFetchToken:0
+  dirty:false, saving:false, pending:false, pendingRemote:null, createdRowIds:{}, sheetExists:false,
+  dashboardDocs:{}, dashboardReady:false, dashboardUnsub:null, dashboardFetchToken:0,
+  batch:{
+    open:false, loaded:false, kind:"delivery", method:"form", rows:[], selected:-1,
+    dirty:false, master:[], masterLoaded:false
+  }
 };
 
 function blank(dateKey){
@@ -1956,22 +2184,137 @@ function blank(dateKey){
 
 function normalizeRows(rows,kind,dateKey){
   if(!Array.isArray(rows)) return [];
-  return rows.map(function(rawRow,index){
+  return rows.filter(function(rawRow){
+    return !rowEmpty(rawRow);
+  }).map(function(rawRow,index){
     var r=Object.assign({},EMPTY_ROW,rawRow||{});
-
-    if(!r._id){
-      r._id=stableLegacyRowId(kind,dateKey,index,r);
+    if(!r._id) r._id=stableLegacyRowId(kind,dateKey,index,r);
+    if(!r._storage) r._storage=r._owner?"owner":"legacy";
+    if(r._owner){
+      r._owner=ownerShort(r._owner);
+      r._ownerOrder=ownerOrder(r._owner);
+      r._seq=rowSequence(r);
+    }else{
+      r._storage="legacy";
+      r._legacyIndex=index;
+      r._owner="";
+      r._ownerOrder=99;
     }
-
     return r;
   });
+}
+
+function normalizeOwnerRows(ownerMap,kind,dateKey){
+  var out=[];
+  if(!ownerMap || typeof ownerMap!=="object") return out;
+  Object.keys(ownerMap).forEach(function(ownerKey){
+    var owner=ownerShort(ownerKey)||ownerKey;
+    var arr=Array.isArray(ownerMap[ownerKey])?ownerMap[ownerKey]:[];
+    arr.filter(function(r){return !rowEmpty(r);}).forEach(function(rawRow,index){
+      var r=Object.assign({},EMPTY_ROW,rawRow||{});
+      if(!r._id) r._id=randomRowId();
+      r._storage="owner";
+      r._owner=owner;
+      r._ownerOrder=ownerOrder(owner);
+      r._seq=rowSequence(r)===999999?(index+1):rowSequence(r);
+      r._createdAt=Number(r._createdAt)||0;
+      out.push(r);
+    });
+  });
+  return out;
+}
+
+function mergeUniqueRows(legacyRows,ownerRows){
+  var seen={};
+  var out=[];
+  (legacyRows||[]).concat(ownerRows||[]).forEach(function(r){
+    if(!r || rowEmpty(r)) return;
+    var id=r._id||randomRowId();
+    if(seen[id]) return;
+    seen[id]=true;
+    r._id=id;
+    out.push(r);
+  });
+  return out;
+}
+
+function sortRowsForDisplay(rows){
+  return (rows||[]).slice().sort(function(a,b){
+    var aOwn=!!rowOwner(a), bOwn=!!rowOwner(b);
+    if(aOwn!==bOwn) return aOwn?1:-1; // keep existing legacy rows first
+    if(!aOwn){
+      return (Number(a._legacyIndex)||0)-(Number(b._legacyIndex)||0);
+    }
+    var ao=ownerOrder(a._owner), bo=ownerOrder(b._owner);
+    if(ao!==bo) return ao-bo;
+    var as=rowSequence(a), bs=rowSequence(b);
+    if(as!==bs) return as-bs;
+    return rowCreatedAt(a)-rowCreatedAt(b) || String(a._id).localeCompare(String(b._id));
+  });
+}
+
+function ownerBuckets(sheet,kind){
+  var map={};
+  (sheet&&sheet[kind]||[]).forEach(function(r){
+    if(!r || rowEmpty(r)) return;
+    var o=rowOwner(r);
+    if(!o) return;
+    if(!map[o]) map[o]=[];
+    map[o].push(Object.assign({},r,{_storage:"owner",_owner:o,_ownerOrder:ownerOrder(o)}));
+  });
+  Object.keys(map).forEach(function(o){
+    map[o].sort(function(a,b){
+      return rowSequence(a)-rowSequence(b) || rowCreatedAt(a)-rowCreatedAt(b) || String(a._id).localeCompare(String(b._id));
+    });
+  });
+  return map;
+}
+
+function legacyRows(sheet,kind){
+  return (sheet&&sheet[kind]||[]).filter(function(r){return r && !rowEmpty(r) && !rowOwner(r);}).map(function(r){return Object.assign({},r,{_storage:"legacy"})});
+}
+
+function ownerBucketSignature(rows){
+  return JSON.stringify((rows||[]).map(function(r){
+    var x=Object.assign({},r);
+    delete x._storage;
+    delete x._legacyIndex;
+    return x;
+  }).sort(function(a,b){return String(a._id).localeCompare(String(b._id));}));
+}
+
+function sheetBucketChanged(base,local,kind,owner){
+  var bm=ownerBuckets(base,kind), lm=ownerBuckets(local,kind);
+  return ownerBucketSignature(bm[owner]||[])!==ownerBucketSignature(lm[owner]||[]);
+}
+
+function changedOwners(base,local,kind){
+  var set={};
+  var bm=ownerBuckets(base,kind), lm=ownerBuckets(local,kind);
+  Object.keys(bm).concat(Object.keys(lm)).forEach(function(o){
+    if(!o) return;
+    if(ownerBucketSignature(bm[o]||[])!==ownerBucketSignature(lm[o]||[])) set[o]=true;
+  });
+  return Object.keys(set);
+}
+
+function legacyChanged(base,local,kind){
+  return JSON.stringify(legacyRows(base,kind))!==JSON.stringify(legacyRows(local,kind));
+}
+
+function rawRowsForKind(raw,kind,dateKey){
+  raw=raw||{};
+  var legacy=normalizeRows(raw[kind],kind,dateKey);
+  var ownerMap=raw[kind+"ByOwner"];
+  var ownerRows=normalizeOwnerRows(ownerMap,kind,dateKey);
+  return mergeUniqueRows(legacy,ownerRows);
 }
 
 function normalize(raw,dateKey){
   var s=blank(dateKey);
   if(!raw) return s;
-  s.delivery=normalizeRows(raw.delivery,"delivery",dateKey);
-  s.pickup=normalizeRows(raw.pickup,"pickup",dateKey);
+  s.delivery=rawRowsForKind(raw,"delivery",dateKey);
+  s.pickup=rawRowsForKind(raw,"pickup",dateKey);
   s.nihil=!!raw.nihil;
   s.prepareBy=raw.prepareBy||""; s.checkedBy=raw.checkedBy||""; s.approvalBy=raw.approvalBy||"";
   s.updatedAt=raw.updatedAt||""; s.updatedByName=raw.updatedByName||""; s.updatedByUid=raw.updatedByUid||"";
@@ -2005,35 +2348,80 @@ var MEMBER_PROFILES=[
   {
     full:"Ferry Surya Prasojo",
     short:"Ferry",
-    aliases:["Ferry Surya Prasojo","Ferry"]
+    aliases:["Ferry Surya Prasojo","Ferry Surya","Ferry"]
   },
   {
     full:"Bayu Solikin",
     short:"Bayu",
-    aliases:["Bayu Solikin","Bayu"]
+    aliases:["Bayu Solikin","Solikin","Bayu"]
   },
   {
     full:"Achmad Eka",
     short:"Eka",
-    aliases:["Achmad Eka","Eka"]
+    aliases:["Achmad Eka","Achmad","Eka"]
   },
   {
     full:"Sultan Lucky Alfinso",
     short:"Sultan",
-    aliases:["Sultan Lucky Alfinso","Sultan","Sultan Lucky A"]
+    aliases:["Sultan Lucky Alfinso","Sultan","Sultan Lucky","Lucky","Alfinso","Sultan Lucky A"]
   },
   {
     full:"Fazin Kurniyawati",
     short:"Fazin",
     optional:true,
-    aliases:["Fazin Kurniyawati","Fazin"]
+    aliases:["Fazin Kurniyawati","Kurniyawati","Fazin"]
+  },
+  {
+    full:"JSMOLD",
+    short:"JSMOLD",
+    optional:true,
+    readOnly:true,
+    aliases:["JSMOLD","jsmold"]
   }
 ];
+
+
+var MEMBER_ORDER={
+  "Eka":1,
+  "Bayu":2,
+  "Sultan":3,
+  "Ferry":4,
+  "Fazin":5
+};
+
+function ownerShort(name){
+  var p=resolveMemberProfile(name||"");
+  return p?p.short:"";
+}
+function ownerOrder(name){
+  var n=ownerShort(name);
+  return MEMBER_ORDER[n]||99;
+}
+function rowOwner(r){
+  if(!r) return "";
+  return ownerShort(r._owner||r.owner||"");
+}
+function rowSequence(r){
+  var n=Number(r&&r._seq);
+  return isFinite(n)&&n>0?n:999999;
+}
+function rowCreatedAt(r){
+  return Number(r&&r._createdAt)||0;
+}
+function nextOwnerSequence(rows,owner){
+  var max=0;
+  (rows||[]).forEach(function(r){
+    if(rowOwner(r)===owner){
+      max=Math.max(max,rowSequence(r));
+    }
+  });
+  return max+1;
+}
 
 var ENGINEERING_MEMBERS=["Eka","Bayu","Sultan"];
 var MARKETING_MEMBERS=["Ferry"];
 var ALL_ROSTER=ENGINEERING_MEMBERS.concat(MARKETING_MEMBERS);
-var OPTIONAL_VIEWERS=["Fazin"];
+var OPTIONAL_VIEWERS=["Fazin","JSMOLD"];
 
 function normalizePersonName(name){
   return String(name||"")
@@ -2090,8 +2478,13 @@ function hasName(list,name){
 }
 function rosterState(name){
   var s=state.sheet;
-  if(hasName(s.confirmed,name)) return "ok";
+
+  // A member who has actually filled the sheet is already considered
+  // confirmed for this date. Older data may have the member in
+  // `contributors` without a matching `confirmed` entry, so contributors
+  // must also drive the green check to keep the UI consistent.
   if(hasName(s.leave,name)) return "leave";
+  if(hasName(s.confirmed,name) || hasName(s.contributors,name)) return "ok";
   return "pending";
 }
 function rosterLine(list){
@@ -2100,9 +2493,8 @@ function rosterLine(list){
     if(st==="ok") return n;
     if(st==="leave") return "*";
     return "";
-  });
-  if(list.length===1) return vals[0]||"--";
-  return vals.join("-");
+  }).filter(function(v){return !!v;});
+  return vals.length ? vals.join(" - ") : "--";
 }
 function pendingNames(){
   return ALL_ROSTER.filter(function(n){return rosterState(n)==="pending";});
@@ -2173,7 +2565,16 @@ function renderConfirmBar(){
   bar.appendChild(el("span","spacer"));
 
   var myName=resolveMemberName(state.me.name);
-  if(isCoreMember(myName) && rosterState(myName)==="pending"){
+  var teamBtn=document.getElementById("teamConfirmBtn");
+  if(teamBtn){
+    var mine=isCoreMember(myName);
+    teamBtn.disabled=!state.canWrite || !mine;
+    teamBtn.textContent=(mine && rosterState(myName)==="ok")
+      ?"Konfirmasi Tim ✓"
+      :"Konfirmasi Tim";
+  }
+
+  if(isCoreMember(myName) && rosterState(myName)==="pending" && state.canWrite){
     var b=el("button","btn");
     b.type="button";
     b.textContent="Konfirmasi: tidak ada tambahan dariku";
@@ -2228,12 +2629,13 @@ function sigRoster(cap,who,text){
 }
 function sigBlank(cap,who,field){
   return '<div class="sig"><div class="cap">'+cap+'</div>'
-       + '<div class="box"><input data-sig="'+field+'" value="'+esc(state.sheet[field])+'"></div>'
+       + '<div class="box"><input data-sig="'+field+'" value="'+esc(state.sheet[field])+'"'+(state.canWrite?"":" disabled")+"></div>"
        + '<div class="who">'+who+'</div></div>';
 }
 function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
 
 function section(kind,label,statusLabel,rows,minRows){
+  var displayRows=sortRowsForDisplay(rows||[]);
   var h='<table class="tbl"><colgroup>'
     + '<col style="width:22px"><col style="width:10%"><col style="width:16%"><col style="width:6%">'
     + '<col style="width:11.5%"><col style="width:23%"><col style="width:6%"><col style="width:7%"><col>'
@@ -2242,20 +2644,29 @@ function section(kind,label,statusLabel,rows,minRows){
     + '<th rowspan="2">MOLD ID</th><th rowspan="2">MOLD NAME</th><th colspan="2">STATUS</th><th rowspan="2">KETERANGAN</th></tr>'
     + '<tr><th>AREA</th><th>COMPANY NAME</th><th>'+statusLabel+'</th><th>JADWAL ULANG</th></tr>'
     + '</thead><tbody>';
-  var total=Math.max(rows.length,minRows);
-  for(var i=0;i<total;i++){
-    var r=rows[i];
+
+  var total=Math.max(displayRows.length,minRows);
+
+  for(var di=0;di<total;di++){
+    var r=displayRows[di];
+    var originalIndex=r?rows.indexOf(r):-1;
     h+='<tr'+(r?'':' class="filler"')+'>';
-    if(i===0) h+='<td class="vertlab" rowspan="'+total+'">'+label+'</td>';
-    if(!r){ h+='<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'; continue; }
-    h+=cell(kind,i,"area",r.area);
-    h+=cell(kind,i,"company",r.company);
-    h+=cell(kind,i,"pic",r.pic,"ctr");
-    h+=cell(kind,i,"moldId",r.moldId,"ctr");
-    h+=cell(kind,i,"moldName",r.moldName);
-    h+='<td class="chk'+(r.status==="ok"?" on-d":"")+'" data-chk="ok" data-kind="'+kind+'" data-i="'+i+'"><span class="mk">'+(r.status==="ok"?"&#10003;":"")+'</span></td>';
-    h+='<td class="chk'+(r.status==="ulang"?" on-r":"")+'" data-chk="ulang" data-kind="'+kind+'" data-i="'+i+'"><span class="mk">'+(r.status==="ulang"?"&#10003;":"")+'</span></td>';
-    h+=noteCell(kind,i,r);
+
+    if(di===0) h+='<td class="vertlab" rowspan="'+total+'">'+label+'</td>';
+
+    if(!r){
+      h+='<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+      continue;
+    }
+
+    h+=cell(kind,originalIndex,"area",r.area);
+    h+=cell(kind,originalIndex,"company",r.company);
+    h+=cell(kind,originalIndex,"pic",r.pic,"ctr");
+    h+=cell(kind,originalIndex,"moldId",r.moldId,"ctr");
+    h+=cell(kind,originalIndex,"moldName",r.moldName);
+    h+='<td class="chk'+(r.status==="ok"?" on-d":"")+'" data-chk="ok" data-kind="'+kind+'" data-i="'+originalIndex+'"><span class="mk">'+(r.status==="ok"?"&#10003;":"")+'</span></td>';
+    h+='<td class="chk'+(r.status==="ulang"?" on-r":"")+'" data-chk="ulang" data-kind="'+kind+'" data-i="'+originalIndex+'"><span class="mk">'+(r.status==="ulang"?"&#10003;":"")+'</span></td>';
+    h+=noteCell(kind,originalIndex,r);
     h+='</tr>';
   }
   h+='</tbody></table>';
@@ -2274,7 +2685,7 @@ function noteCell(kind,i,r){
 
 function cell(kind,i,field,val,extraCls,extraHTML){
   return '<td class="cell '+(extraCls||"")+'">'
-       + '<input data-kind="'+kind+'" data-i="'+i+'" data-f="'+field+'" value="'+esc(val)+'"'+(state.mobile?" readonly":"")+'>'
+       + '<input data-kind="'+kind+'" data-i="'+i+'" data-f="'+field+'" value="'+esc(val)+'"'+(state.mobile?" readonly ":" ")+(state.canWrite?"":"disabled ")+'>'
        + (extraHTML||"") + '</td>';
 }
 
@@ -2320,6 +2731,10 @@ sheetEl.addEventListener("change",function(e){
 sheetEl.addEventListener("focusout",function(e){
   var t=e.target;
   if(t.tagName!=="INPUT" || !t.dataset.f) return;
+
+  // Blur is NOT a render boundary. The value has already been copied
+  // into state.sheet by the input listener and remains there until save.
+
   var val=t.value.toUpperCase();
   if(t.dataset.f==="company") val=formatCompany(val);
   else if(t.dataset.f==="moldId") val=formatMoldId(val);
@@ -2349,60 +2764,58 @@ sheetEl.addEventListener("click",function(e){
 });
 
 function removeRow(kind,i){
+  if(!state.canWrite){
+    toast("Hanya bisa dilihat","Akun ini tidak punya akses ubah.");
+    return;
+  }
   state.sheet[kind].splice(i,1);
   markDirty(); renderSheet();
 }
 /* addRow uses stable _id values; Firestore transaction merges simultaneous additions. */
+/* Blank template rows are not persisted; each added row gets a unique _id. */
+/* Member-priority insertion: owner/order/sequence, not physical row position. */
 function addRow(kind){
   if(!state.canWrite){
     toast("Hanya bisa dilihat","Akun ini tidak punya akses ubah.");
     return;
   }
 
+  var owner=ownerShort(state.me.name);
+  if(!owner){
+    toast("Member belum terverifikasi","Tidak bisa menambahkan item sebelum nama member dikenali.");
+    return;
+  }
+
   var rows=state.sheet[kind];
 
-  /*
-    Tambahkan item tepat setelah item terakhir yang terisi.
-    Jika sudah ada baris kosong yang tersedia di bawahnya,
-    gunakan baris kosong tersebut — jangan membuat baris baru
-    setelah filler. Ini menghilangkan efek "selang 1 baris kosong".
-  */
-  var lastFilled=-1;
-  for(var i=0;i<rows.length;i++){
-    if(!rowEmpty(rows[i])) lastFilled=i;
-  }
+  var seq=nextOwnerSequence(rows,owner);
+  var created=newRow(owner,seq);
+  created._storage="owner";
+  created._owner=owner;
+  created._ownerOrder=ownerOrder(owner);
+  rows.push(created);
 
-  var targetIndex=lastFilled+1;
-
-  if(targetIndex<rows.length && rowEmpty(rows[targetIndex])){
-    // Re-use the first existing blank row.
-    rows[targetIndex]=newRow();
-  }else{
-    // No blank row available at the target position -> insert here.
-    rows.splice(targetIndex,0,newRow());
-  }
-
+  state.createdRowIds[created._id]=true;
   state.sheet.nihil=false;
+
   markDirty();
   renderSheet();
 
   if(state.mobile){
-    openRowDialog(kind,targetIndex,true);
+    openRowDialog(kind,rows.indexOf(created),true);
   }else{
     var inp=sheetEl.querySelector(
-      'input[data-kind="'+kind+'"][data-i="'+targetIndex+'"][data-f="area"]'
+      'input[data-kind="'+kind+'"][data-i="'+rows.indexOf(created)+'"][data-f="area"]'
     );
     if(inp) inp.focus();
   }
 }
+
 document.getElementById("addDel").onclick=function(){addRow("delivery")};
 document.getElementById("addPick").onclick=function(){addRow("pickup")};
 
-document.getElementById("markNihil").onclick=function(){
-  if(!state.canWrite) return;
-  state.sheet.nihil=!state.sheet.nihil;
-  markDirty(); renderSheet();
-  toast(state.sheet.nihil?"Ditandai nihil":"Tanda nihil dilepas", longDate(state.sel));
+document.getElementById("teamConfirmBtn").onclick=function(){
+  confirmMine();
 };
 document.getElementById("printBtn").onclick=function(){
   try{ window.print(); }catch(err){ toast("Cetak tidak bisa dibuka","Coba buka lembar ini di tab sendiri, lalu cetak."); }
@@ -2546,6 +2959,524 @@ document.getElementById("shareImgBtn").onclick=async function(){
   }
 };
 
+
+/* ───────────────────── batch input v24 ───────────────────── */
+(function(){
+  var batchDialog=document.getElementById("batchDialog");
+  var batchManualDialog=document.getElementById("batchManualConfirmDialog");
+  var manualPending=null;
+
+  function batchOwner(){ return ownerShort(state.me.name)||String(state.me.name||"").trim(); }
+  function batchLocalKey(){ return LOCAL_KEY_PREFIX + (batchOwner()||"unknown"); }
+  function batchNormalizeMasterRow(data,id){
+    data=data||{};
+    var moldId=String(data.moldId||data.id||data.MoldID||data["Mold ID"]||id||"").trim();
+    var moldName=String(data.moldName||data.name||data.MoldName||data["Mold Name"]||"").trim();
+    if(!moldId) return null;
+    return {
+      moldId:formatMoldId(moldId.toUpperCase()),
+      moldName:moldName.toUpperCase(),
+      area:String(data.area||data.Area||"").trim().toUpperCase(),
+      company:formatCompany(String(data.company||data.companyName||data.Company||data["Company Name"]||"").trim().toUpperCase())
+    };
+  }
+  function batchMasterFind(moldId){
+    var target=formatMoldId(String(moldId||"").trim().toUpperCase());
+    if(!target) return null;
+    for(var i=0;i<state.batch.master.length;i++){
+      if(state.batch.master[i].moldId===target) return state.batch.master[i];
+    }
+    return null;
+  }
+  function batchEnrichRow(r){
+    r=r||{};
+    r.area=String(r.area||"").trim().toUpperCase();
+    r.company=formatCompany(String(r.company||"").trim().toUpperCase());
+    r.moldId=formatMoldId(String(r.moldId||"").trim().toUpperCase());
+    r.moldName=String(r.moldName||"").trim().toUpperCase();
+    if(!r._id) r._id=randomRowId();
+    if(!r._batchItemId) r._batchItemId=r._id;
+    if(!Object.prototype.hasOwnProperty.call(r,"manualConfirmed")) r.manualConfirmed=false;
+    var m=batchMasterFind(r.moldId);
+    if(m){
+      r.moldName=m.moldName || r.moldName;
+      r.masterMatched=true;
+      r.manualConfirmed=false;
+    }else{
+      r.masterMatched=false;
+    }
+    return r;
+  }
+  function batchNewRow(){
+    return batchEnrichRow({_id:randomRowId(),_batchItemId:randomRowId(),area:"",company:"",moldId:"",moldName:"",manualConfirmed:false});
+  }
+  function batchStatusOf(r){
+    var errors=[];
+    if(!String(r&&r.moldId||"").trim()) errors.push("Mold ID wajib");
+    if(!String(r&&r.area||"").trim()) errors.push("Area wajib");
+    if(!String(r&&r.company||"").trim()) errors.push("Company Name wajib");
+    if(String(r&&r.moldId||"").trim() && !batchMasterFind(r.moldId) && !r.manualConfirmed){
+      errors.push("Mold ID tidak ditemukan di master; perlu konfirmasi manual");
+    }
+    return errors;
+  }
+  function batchValid(r){ return batchStatusOf(r).length===0; }
+  function batchSummary(){
+    var valid=0,err=0,pending=0;
+    (state.batch.rows||[]).forEach(function(r){
+      var es=batchStatusOf(r);
+      if(es.length){err++;}else{valid++;}
+      if(r._pendingSheetSave) pending++;
+    });
+    return {valid:valid,error:err,pending:pending,total:state.batch.rows.length};
+  }
+  function batchSetBanner(text,kind){
+    var b=document.getElementById("batchStatusBanner");
+    b.textContent=text||"";
+    b.className="batch-banner"+(kind?" "+kind:"");
+  }
+  function batchEditEnabled(){
+    return state.batch.open && state.canWrite && !!state.db && navigator.onLine!==false;
+  }
+  function batchApplyReadOnly(){
+    var enabled=batchEditEnabled();
+    batchDialog.classList.toggle("readonly",!enabled);
+    ["batchAdd1","batchAdd5","batchClearRows","batchParsePaste","batchClearPaste","batchDeleteDraft","batchSaveBtn","batchEditArea","batchEditCompany","batchEditMoldId","batchEditMoldName","batchCopyArea","batchCopyCompany"].forEach(function(id){
+      var e=document.getElementById(id); if(e) e.disabled=!enabled;
+    });
+    document.querySelectorAll("#batchKindSeg button,#batchMethodSeg button").forEach(function(b){b.disabled=!enabled;});
+    if(!state.db){
+      batchSetBanner("Belum tersambung ke JSMOLD. Tunggu koneksi untuk menggunakan Batch Input.","warn");
+    }else if(navigator.onLine===false){
+      batchSetBanner("Offline. Batch Input hanya dapat dilihat sampai koneksi kembali.","warn");
+    }else if(state.batch.dirty){
+      batchSetBanner("Perubahan batch siap disimpan ke lembar JSMOLD.","ok");
+    }else{
+      batchSetBanner("Batch siap digunakan.","ok");
+    }
+  }
+  function batchRenderSegments(){
+    document.querySelectorAll("#batchKindSeg button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.kind===state.batch.kind));});
+    document.querySelectorAll("#batchMethodSeg button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.method===state.batch.method));});
+    document.getElementById("batchFormPanel").hidden=state.batch.method!=="form";
+    document.getElementById("batchPastePanel").hidden=state.batch.method!=="paste";
+  }
+  function batchRenderFormList(){
+    var host=document.getElementById("batchFormList"); host.innerHTML="";
+    if(!state.batch.rows.length){ host.innerHTML='<div class="batch-empty">Belum ada item. Gunakan +1 atau +5 baris, atau paste dari Excel.</div>'; return; }
+    state.batch.rows.forEach(function(r,i){
+      var es=batchStatusOf(r);
+      var item=el("div","batch-form-item"+(i===state.batch.selected?" sel":""));
+      item.dataset.i=i;
+      var no=el("div","batch-form-no",String(i+1)); item.appendChild(no);
+      var main=el("div","batch-form-main");
+      var title=r.moldId||r.moldName||"Item belum diisi";
+      main.appendChild(el("div","batch-form-title",title));
+      var meta=[r.area||"Area—",r.company||"Company—",r.moldName||"Mold Name—"].join(" · ");
+      main.appendChild(el("div","batch-form-meta",meta));
+      item.appendChild(main);
+      var actions=el("div","batch-form-actions");
+      var st=el("span","batch-status "+(es.length?"error":"valid"),es.length?(es.length+" error"):"Valid");
+      actions.appendChild(st);
+      if(r._pendingSheetSave) actions.appendChild(el("span","batch-status pending","Menunggu simpan lembar"));
+      item.appendChild(actions);
+      host.appendChild(item);
+    });
+  }
+  function batchRenderPreview(){
+    var wrap=document.getElementById("batchPreviewWrap");
+    var sum=batchSummary();
+    document.getElementById("batchCountLabel").textContent=sum.total+" / 10 item";
+    document.getElementById("batchPreviewSummary").textContent=sum.valid+" valid · "+sum.error+" perlu diperbaiki"+(sum.pending?" · "+sum.pending+" menunggu simpan lembar":"");
+    if(!state.batch.rows.length){wrap.innerHTML='<div class="batch-empty">Preview kosong.</div>';return;}
+    var html='<table class="batch-table"><thead><tr><th>No.</th><th>Mold ID</th><th>Mold Name</th><th>Area</th><th>Company Name</th><th>Status</th><th>Alasan</th></tr></thead><tbody>';
+    state.batch.rows.forEach(function(r,i){
+      var es=batchStatusOf(r), cls=(i===state.batch.selected?" sel":"")+(es.length?" err":"");
+      html+='<tr class="'+cls+'" data-i="'+i+'">'
+        +'<td>'+(i+1)+'</td>'
+        +'<td><b>'+esc(r.moldId||"—")+'</b></td>'
+        +'<td>'+esc(r.moldName||"—")+'</td>'
+        +'<td>'+esc(r.area||"—")+'</td>'
+        +'<td>'+esc(r.company||"—")+'</td>'
+        +'<td>'+(es.length?'<span class="batch-status error">Error</span>':'<span class="batch-status valid">Valid</span>')+'</td>'
+        +'<td class="'+(es.length?"error-cell":"")+'">'+esc(es.join(" · ")||"—")+'</td>'
+        +'</tr>';
+    });
+    html+='</tbody></table>';
+    wrap.innerHTML=html;
+  }
+  function batchRenderEdit(){
+    var r=state.batch.rows[state.batch.selected];
+    var disabled=!batchEditEnabled();
+    var ids=["batchEditArea","batchEditCompany","batchEditMoldId","batchEditMoldName","batchCopyArea","batchCopyCompany"];
+    if(!r){
+      var pf=state.batch.pendingForm||{area:"",company:"",moldId:"",moldName:""};
+      document.getElementById("batchEditTitle").textContent="Input awal";
+      document.getElementById("batchEditStatus").textContent="Belum ada baris";
+      document.getElementById("batchEditHint").textContent="Isi data di sini terlebih dahulu. Saat +1 baris ditekan, data otomatis dipindahkan ke baris pertama.";
+      document.getElementById("batchEditArea").value=pf.area||"";
+      document.getElementById("batchEditCompany").value=pf.company||"";
+      document.getElementById("batchEditMoldId").value=pf.moldId||"";
+      document.getElementById("batchEditMoldName").value=pf.moldName||"";
+      ["batchCopyArea","batchCopyCompany"].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=true;});
+      ids.slice(0,4).forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=disabled;});
+      return;
+    }
+    document.getElementById("batchEditTitle").textContent="Edit item "+(state.batch.selected+1);
+    var es=batchStatusOf(r);
+    document.getElementById("batchEditStatus").textContent=es.length?es.join(" · "):"Valid";
+    document.getElementById("batchEditHint").textContent=es.length?"Perbaiki field yang ditandai pada alasan validasi di preview.":"Item ini siap masuk penyimpanan batch.";
+    document.getElementById("batchEditArea").value=r.area||"";
+    document.getElementById("batchEditCompany").value=r.company||"";
+    document.getElementById("batchEditMoldId").value=r.moldId||"";
+    document.getElementById("batchEditMoldName").value=r.moldName||"";
+    ids.forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=disabled;});
+  }
+  function batchRenderAll(){ batchRenderSegments(); batchRenderFormList(); batchRenderPreview(); batchRenderEdit(); batchApplyReadOnly(); }
+  function batchSetSelected(i){
+    i=Math.max(0,Math.min((state.batch.rows.length||1)-1,Number(i)||0));
+    if(!state.batch.rows.length){state.batch.selected=-1;}else{state.batch.selected=i;}
+    batchRenderAll();
+  }
+  function batchAddRows(count){
+    if(!batchEditEnabled()) return;
+    count=Math.max(1,Math.min(10,count||1));
+    var before=state.batch.rows.length;
+    var room=10-before;
+    var add=Math.min(count,room);
+    for(var i=0;i<add;i++) state.batch.rows.push(batchNewRow());
+
+    // Jika user sudah mengisi form sebelum membuat baris, pindahkan isinya
+    // ke baris pertama yang baru dibuat tanpa kehilangan data.
+    if(before===0 && add>0){
+      var pf=state.batch.pendingForm||{};
+      var first=state.batch.rows[0];
+      first.area=pf.area||"";
+      first.company=pf.company||"";
+      first.moldId=pf.moldId||"";
+      first.moldName=pf.moldName||"";
+      batchEnrichRow(first);
+      state.batch.pendingForm={area:"",company:"",moldId:"",moldName:""};
+      state.batch.selected=0;
+    }else if(add){
+      state.batch.selected=before;
+    }
+
+    if(add<count) toast("Maksimal 10 item","Batch input hanya mendukung 1–10 item.");
+    if(add){batchMarkDirty();batchRenderAll();}
+  }
+  function batchCopyPrevious(field){
+    if(!batchEditEnabled()) return;
+    var i=state.batch.selected;
+    if(i<=0 || !state.batch.rows[i]) return;
+    var src=state.batch.rows[i-1];
+    state.batch.rows[i][field]=field==="company"?formatCompany(src[field]||""):String(src[field]||"").toUpperCase();
+    batchEnrichRow(state.batch.rows[i]);
+    batchMarkDirty(); batchRenderAll();
+  }
+  function batchEditField(field,value){
+    if(!batchEditEnabled()) return;
+    if(field==="company") value=formatCompany(String(value||"").toUpperCase());
+    else if(field==="moldId") value=formatMoldId(String(value||"").toUpperCase());
+    else value=String(value||"").toUpperCase();
+
+    var r=state.batch.rows[state.batch.selected];
+    if(!r){
+      state.batch.pendingForm[field]=value;
+      if(field==="moldId"){
+        var pm=batchMasterFind(value);
+        if(pm) state.batch.pendingForm.moldName=pm.moldName||state.batch.pendingForm.moldName;
+      }
+      batchMarkDirty();
+      batchRenderEdit();
+      return;
+    }
+
+    if(field==="moldId" && value!==r.moldId){ r.manualConfirmed=false; }
+    r[field]=value;
+    if(field==="moldId") batchEnrichRow(r);
+    batchMarkDirty();
+    batchRenderFormList(); batchRenderPreview(); batchRenderEdit();
+  }
+  function batchSetKind(kind){
+    if(kind!=="delivery" && kind!=="pickup") return;
+    if(kind===state.batch.kind) return;
+    if(state.batch.rows.length && batchEditEnabled()){
+      var ok=window.confirm("Ganti jenis batch dari "+(state.batch.kind==="delivery"?"Delivery":"Pickup")+" ke "+(kind==="delivery"?"Delivery":"Pickup")+"? Draft saat ini akan disimpan dan jenis batch berubah.");
+      if(!ok){ batchRenderSegments(); return; }
+    }
+    state.batch.kind=kind;
+    state.batch.selected=state.batch.rows.length?0:-1;
+    batchMarkDirty(); batchRenderAll();
+  }
+  function detectPasteHeader(cols){
+    var map={};
+    cols.forEach(function(v,i){
+      var n=String(v||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      if(/mold\s*id|id\s*mold|kode\s*mold/.test(n)) map.moldId=i;
+      else if(/mold\s*name|nama\s*mold/.test(n)) map.moldName=i;
+      else if(/^area$|area\s*tujuan|tujuan/.test(n)) map.area=i;
+      else if(/company|perusahaan|nama\s*perusahaan/.test(n)) map.company=i;
+    });
+    return Object.keys(map).length>=2?map:null;
+  }
+  function splitPasteLine(line){
+    if(line.indexOf("\t")>=0) return line.split("\t");
+    if(line.indexOf(",")>=0) return line.split(",");
+    if(line.indexOf(";")>=0) return line.split(";");
+    return [line];
+  }
+  function parsePaste(text){
+    var lines=String(text||"").replace(/\r/g,"").split("\n").filter(function(x){return x.trim()!=="";});
+    if(!lines.length) return {rows:[],error:"Tidak ada data yang dipaste."};
+    var matrix=lines.map(splitPasteLine).map(function(row){return row.map(function(v){return String(v==null?"":v).trim();});});
+    var headerMap=detectPasteHeader(matrix[0]);
+    var start=headerMap?1:0;
+    var rows=[];
+    for(var i=start;i<matrix.length;i++){
+      var c=matrix[i];
+      var r=batchNewRow();
+      if(headerMap){
+        r.moldId=c[headerMap.moldId]||""; r.moldName=c[headerMap.moldName]||""; r.area=c[headerMap.area]||""; r.company=c[headerMap.company]||"";
+      }else{
+        r.moldId=c[0]||""; r.moldName=c[1]||""; r.area=c[2]||""; r.company=c[3]||"";
+      }
+      batchEnrichRow(r);
+      rows.push(r);
+    }
+    if(rows.length>10) return {rows:rows.slice(0,10),error:"Paste berisi "+rows.length+" item; hanya 10 item pertama yang dimuat."};
+    return {rows:rows,error:""};
+  }
+  function batchAddPaste(){
+    if(!batchEditEnabled()) return;
+    var parsed=parsePaste(document.getElementById("batchPasteInput").value);
+    if(parsed.error && !parsed.rows.length){toast("Paste tidak valid",parsed.error);return;}
+    if(!parsed.rows.length){toast("Tidak ada item","Tidak ada baris data yang ditemukan.");return;}
+    var room=10-state.batch.rows.length;
+    if(parsed.rows.length>room) parsed.rows=parsed.rows.slice(0,room);
+    if(!parsed.rows.length){toast("Batch sudah penuh","Maksimal 10 item.");return;}
+    state.batch.rows=state.batch.rows.concat(parsed.rows);
+    state.batch.selected=state.batch.rows.length-parsed.rows.length;
+    batchMarkDirty(); batchRenderAll();
+    document.getElementById("batchPasteInput").value="";
+    if(parsed.error) toast("Paste dipotong",parsed.error); else toast("Data dipreview",parsed.rows.length+" item ditambahkan ke batch.");
+  }
+  function batchPopulateMaster(){
+    // Master data tetap dipakai di belakang layar untuk validasi dan
+    // autofill Mold Name ketika Mold ID yang diketik ditemukan.
+    // Tidak ada dropdown master terpisah di UI.
+    var dl=document.getElementById("batchMoldIds");
+    if(!dl) return;
+    dl.innerHTML="";
+    (state.batch.master||[]).forEach(function(m){
+      var d=document.createElement("option");
+      d.value=m.moldId;
+      dl.appendChild(d);
+    });
+  }
+  async function batchLoadMaster(){
+    if(state.batch.masterLoaded) return;
+    state.batch.masterLoaded=true;
+    state.batch.master=[];
+    try{
+      if(state.db){
+        var snap=await state.db.collection("moldMaster").limit(500).get();
+        snap.docs.forEach(function(d){var m=batchNormalizeMasterRow(d.data(),d.id);if(m)state.batch.master.push(m);});
+      }
+    }catch(err){
+      console.warn("Master data tidak dapat dimuat",err);
+    }
+    batchPopulateMaster();
+    batchRenderEdit();
+  }
+  function batchAskManual(rowIndex){
+    return new Promise(function(resolve){
+      manualPending={index:rowIndex,resolve:resolve};
+      var r=state.batch.rows[rowIndex];
+      document.getElementById("batchManualConfirmSub").textContent=(r.moldId||"Mold ID kosong")+" tidak ditemukan di master data.";
+      document.getElementById("batchManualConfirmBox").textContent="Izinkan input manual untuk "+(r.moldId||"Mold ID ini")+"? Mold Name boleh kosong, tetapi Mold ID tetap wajib.";
+      if(!batchManualDialog.open) batchManualDialog.showModal();
+    });
+  }
+  document.getElementById("batchManualAccept").onclick=function(){
+    if(!manualPending)return;
+    var p=manualPending; manualPending=null; batchManualDialog.close();
+    if(state.batch.rows[p.index]) state.batch.rows[p.index].manualConfirmed=true;
+    batchMarkDirty(); batchRenderAll(); p.resolve(true);
+  };
+  document.getElementById("batchManualCancel").onclick=function(){
+    if(!manualPending)return;
+    var p=manualPending; manualPending=null; batchManualDialog.close(); p.resolve(false);
+  };
+  async function batchEnsureManualConfirmations(){
+    for(var i=0;i<state.batch.rows.length;i++){
+      var r=state.batch.rows[i];
+      if(String(r.moldId||"").trim() && !batchMasterFind(r.moldId) && !r.manualConfirmed){
+        var ok=await batchAskManual(i);
+        if(!ok) return false;
+      }
+    }
+    return true;
+  }
+  function batchFindSheetItem(batchItemId){
+    if(!batchItemId) return null;
+    var kinds=[state.batch.kind];
+    for(var k=0;k<kinds.length;k++){
+      var rows=state.sheet[kinds[k]]||[];
+      for(var i=0;i<rows.length;i++) if(rows[i] && rows[i]._batchItemId===batchItemId) return rows[i];
+    }
+    return null;
+  }
+  function batchReconcileAfterSheetSave(){
+    if(!state.batch.open) return;
+    var changed=false;
+    state.batch.rows=(state.batch.rows||[]).filter(function(r){
+      if(r._pendingSheetSave && batchFindSheetItem(r._batchItemId)){ changed=true; return false; }
+      return true;
+    });
+    if(changed){
+      if(state.batch.selected>=state.batch.rows.length) state.batch.selected=state.batch.rows.length-1;
+      state.batch.dirty=!!state.batch.rows.length;
+      batchRenderAll();
+    }
+  }
+  function batchMarkDirty(){
+    if(!batchEditEnabled()) return;
+    state.batch.dirty=true;
+    batchApplyReadOnly();
+  }
+  document.getElementById("batchKindSeg").addEventListener("click",function(e){var b=e.target.closest("button[data-kind]");if(b)batchSetKind(b.dataset.kind);});
+  document.getElementById("batchMethodSeg").addEventListener("click",function(e){var b=e.target.closest("button[data-method]");if(!b)return; state.batch.method=b.dataset.method; batchMarkDirty(); batchRenderAll();});
+  document.getElementById("batchAdd1").onclick=function(){batchAddRows(1)};
+  document.getElementById("batchAdd5").onclick=function(){batchAddRows(5)};
+  document.getElementById("batchClearRows").onclick=function(){
+    if(!batchEditEnabled() || !state.batch.rows.length)return;
+    if(!window.confirm("Kosongkan seluruh item batch ini?"))return;
+    state.batch.rows=[]; state.batch.selected=-1; batchMarkDirty(); batchRenderAll();
+  };
+  document.getElementById("batchFormList").addEventListener("click",function(e){var x=e.target.closest(".batch-form-item");if(x)batchSetSelected(+x.dataset.i);});
+  document.getElementById("batchPreviewWrap").addEventListener("click",function(e){var x=e.target.closest("tr[data-i]");if(x)batchSetSelected(+x.dataset.i);});
+  document.getElementById("batchPastePanel").addEventListener("click",function(e){
+    if(e.target.id==="batchParsePaste")batchAddPaste();
+    if(e.target.id==="batchClearPaste")document.getElementById("batchPasteInput").value="";
+  });
+  document.getElementById("batchEditArea").addEventListener("input",function(){batchEditField("area",this.value);});
+  document.getElementById("batchEditCompany").addEventListener("input",function(){batchEditField("company",this.value);});
+  document.getElementById("batchEditMoldId").addEventListener("input",function(){batchEditField("moldId",this.value);});
+  document.getElementById("batchEditMoldName").addEventListener("input",function(){batchEditField("moldName",this.value);});
+  document.getElementById("batchEditMoldId").addEventListener("change",function(){
+    var r=state.batch.rows[state.batch.selected]; if(!r)return;
+    var m=batchMasterFind(r.moldId);
+    if(m){r.moldName=m.moldName||r.moldName;r.manualConfirmed=false;batchMarkDirty();batchRenderAll();}
+  });
+  document.getElementById("batchCopyArea").onclick=function(){batchCopyPrevious("area")};
+  document.getElementById("batchCopyCompany").onclick=function(){batchCopyPrevious("company")};
+  document.getElementById("batchDeleteDraft").onclick=function(){
+    if(!batchEditEnabled() || !state.batch.rows.length) return;
+    if(!window.confirm("Hapus seluruh item dari batch saat ini?")) return;
+    state.batch.rows=[];
+    state.batch.selected=-1;
+    state.batch.dirty=false;
+    batchRenderAll();
+  };
+  document.getElementById("batchCloseBtn").onclick=function(){
+    batchDialog.close();
+  };
+  document.getElementById("batchStayBtn").onclick=function(){document.getElementById("batchAfterSave").hidden=true;batchRenderAll();};
+  document.getElementById("batchReturnBtn").onclick=function(){document.getElementById("batchAfterSave").hidden=true;batchDialog.close();};
+  document.getElementById("batchSaveBtn").onclick=async function(){
+    if(!batchEditEnabled()) return;
+    if(!state.batch.rows.length){toast("Batch kosong","Tambahkan minimal 1 item.");return;}
+    await batchLoadMaster();
+    var confirmed=await batchEnsureManualConfirmations();
+    if(!confirmed){toast("Batch belum selesai","Item yang membutuhkan konfirmasi manual masih ditandai error.");return;}
+    batchRenderAll();
+    var validRows=state.batch.rows.filter(batchValid);
+    if(!validRows.length){toast("Belum ada item valid","Perbaiki baris berwarna merah terlebih dahulu.");return;}
+    var owner=ownerShort(state.me.name);
+    if(!owner){toast("Member belum terverifikasi","Tidak bisa menyimpan batch.");return;}
+    var added=0;
+    validRows.forEach(function(br){
+      var existing=batchFindSheetItem(br._batchItemId);
+      if(existing){existing.area=br.area;existing.company=br.company;existing.moldId=br.moldId;existing.moldName=br.moldName;added++;br._pendingSheetSave=true;return;}
+      var seq=nextOwnerSequence(state.sheet[state.batch.kind]||[],owner);
+      var nr=newRow(owner,seq);
+      nr._batchItemId=br._batchItemId;
+      nr.area=br.area; nr.company=br.company; nr.moldId=br.moldId; nr.moldName=br.moldName;
+      nr._storage="owner"; nr._owner=owner; nr._ownerOrder=ownerOrder(owner);
+      state.sheet[state.batch.kind].push(nr);
+      state.createdRowIds[nr._id]=true;
+      br._pendingSheetSave=true; added++;
+      state.sheet.nihil=false;
+    });
+    markDirty(); renderSheet();
+    document.getElementById("batchSaveBtn").disabled=true;
+    setPill("saving","Menyimpan batch…");
+    var start=Date.now();
+    doSave();
+    await new Promise(function(resolve){
+      (function check(){
+        if(!state.saving && !state.dirty){resolve(true);return;}
+        if(Date.now()-start>12000){resolve(false);return;}
+        setTimeout(check,180);
+      })();
+    });
+    document.getElementById("batchSaveBtn").disabled=false;
+    batchReconcileAfterSheetSave();
+    if(!state.batch.rows.some(function(r){return r._pendingSheetSave;})){
+      var remaining=batchSummary();
+      state.batch.dirty=!!remaining.total;
+      document.getElementById("batchAfterSaveTitle").textContent=added+" item valid diproses";
+      document.getElementById("batchAfterSaveSub").textContent=remaining.error?"Item valid sudah masuk ke lembar. Item error tetap berada di batch untuk diperbaiki.":"Semua item valid sudah masuk ke lembar. Pilih tindakan berikutnya.";
+      document.getElementById("batchAfterSave").hidden=false;
+      batchRenderAll();
+    }else{
+      toast("Menunggu penyimpanan lembar","Valid items sudah ditambahkan ke lembar, tetapi penyimpanan belum terkonfirmasi.");
+      batchRenderAll();
+    }
+  };
+
+  async function batchOpen(){
+    if(!state.canWrite){toast("Hanya bisa dilihat","Akun ini tidak punya akses ubah.");return;}
+    if(!batchOwner()){toast("Member belum terverifikasi","Verifikasi nama member sebelum membuka Batch Input.");return;}
+    if(!state.batch.dateKey || state.batch.dateKey!==state.sel){
+      state.batch.dateKey=state.sel;
+      state.batch.loaded=false;
+      state.batch.kind="delivery";
+      state.batch.method="form";
+      state.batch.rows=[];
+      state.batch.selected=-1;
+      state.batch.pendingForm={area:"",company:"",moldId:"",moldName:""};
+      state.batch.dirty=false;
+      state.batch.masterLoaded=false;
+      state.batch.master=[];
+    }
+    if(!batchDialog.open) batchDialog.showModal();
+    state.batch.open=true;
+    batchRenderAll();
+    if(navigator.onLine!==false && state.db){
+      await batchLoadMaster();
+    }
+    state.batch.loaded=true;
+    batchApplyReadOnly();
+  }
+  batchDialog.addEventListener("close",function(){
+    state.batch.open=false;
+    document.getElementById("batchAfterSave").hidden=true;
+  });
+  window.addEventListener("online",function(){
+    if(!state.batch.open)return;
+    batchApplyReadOnly();
+  });
+  window.addEventListener("offline",function(){
+    if(!state.batch.open)return;
+    batchApplyReadOnly();
+  });
+  document.getElementById("batchInputBtn").onclick=batchOpen;
+
+  window.batchReconcileAfterSheetSave=batchReconcileAfterSheetSave;
+})();
+
 /* row dialog (mobile) */
 var rd=document.getElementById("rowDialog"), rdCtx=null, rdStatus="", rdReason="";
 document.querySelectorAll('#f_status button').forEach(function(b){
@@ -2569,6 +3500,10 @@ function refreshReasonUI(){
   noteWrap.hidden=false;
 }
 function openRowDialog(kind,i,isNew){
+  if(!state.canWrite){
+    toast("Hanya bisa dilihat","Akun ini tidak punya akses ubah.");
+    return;
+  }
   var r=state.sheet[kind][i]; if(!r) return;
   rdCtx={kind:kind,i:i,isNew:!!isNew};
   document.getElementById("rdTitle").textContent = kind==="delivery"?"Delivery / pengiriman":"Pick up / pengambilan";
@@ -2605,6 +3540,58 @@ rd.addEventListener("close",function(){
   }
 });
 
+/*
+  CONCURRENCY MODEL v20
+  ---------------------
+  Firestore stores only meaningful rows. The blank lines shown in the form
+  are generated by section(..., minRows), so users never compete over a
+  shared filler row.
+
+  Every real row has a stable _id. A simultaneous add from two members
+  creates two different IDs; the transaction merge therefore preserves
+  both rows.
+*/
+/*
+  V21 CONCURRENCY GUARANTEE
+  -------------------------
+  New rows are atomically appended with FieldValue.arrayUnion BEFORE the
+  full transaction merge. This removes the critical race where two users
+  can both write a newly-created row at the same array position.
+
+  The transaction then reads the latest document and merges edits/deletes.
+*/
+/*
+  V22 STORAGE MODEL
+  -----------------
+  New rows are stored per member in:
+    deliveryByOwner.Eka / Bayu / Sultan / Ferry / Fazin
+    pickupByOwner.Eka / Bayu / Sultan / Ferry / Fazin
+
+  The UI flattens those buckets into a single form and sorts them by:
+    member priority -> sequence -> creation time.
+
+  Legacy arrays remain only for backward compatibility. We NEVER guess
+  ownership for legacy rows because their original creator is unknown.
+
+  Save uses Firestore transactions but updates ONLY the buckets/fields that
+  the local user changed. This prevents an Eka write from replacing Bayu's
+  bucket, and prevents Bayu's write from replacing Eka's bucket.
+*/
+/*
+  V23 PERSISTENCE MODEL
+  ---------------------
+  Each member owns an isolated Firestore field:
+    deliveryByOwner.<Member>
+    pickupByOwner.<Member>
+
+  The UI still renders one combined table, sorted by member priority.
+  Saving one member never rewrites another member's owner bucket.
+
+  This is the protection required for simultaneous editing:
+    Eka  -> DELTAMAS 01
+    Fazin -> SURYACIPTA
+  can be committed independently.
+*/
 /* ───────────────────── saving ───────────────────── */
 var saveTimer=null;
 
@@ -2758,90 +3745,82 @@ function stripRowMeta(r){
 
 function rowMap(rows){
   var m={};
+
   (rows||[]).forEach(function(r,i){
-    if(!r) return;
-    var id=r._id||("idx_"+i);
+    if(!r || rowEmpty(r)) return;
+
+    var id=r._id;
+    if(!id){
+      id="idx_"+i;
+      r._id=id;
+    }
+
+    if(m[id]){
+      var suffix=1;
+      var next=id+"_dup"+suffix;
+      while(m[next]) suffix++;
+      r._id=next;
+      id=next;
+    }
+
     m[id]=r;
   });
+
   return m;
 }
 
 function mergeRowsThreeWay(baseRows,localRows,remoteRows){
-  var baseMap=rowMap(baseRows);
-  var localMap=rowMap(localRows);
-  var remoteMap=rowMap(remoteRows);
+  /*
+    Persistence invariant:
+      only real rows exist in all three arrays.
+    Blank template lines are generated by the renderer.
+
+    A newly-created row is therefore simply:
+      base = absent
+      local = present with _id=A
+      remote = present with _id=B
+
+    A and B are independent records and are both preserved.
+  */
+  var baseClean=(baseRows||[]).filter(function(r){return !rowEmpty(r);});
+  var localClean=(localRows||[]).filter(function(r){return !rowEmpty(r);});
+  var remoteClean=(remoteRows||[]).filter(function(r){return !rowEmpty(r);});
+
+  var baseMap=rowMap(baseClean);
+  var localMap=rowMap(localClean);
+  var remoteMap=rowMap(remoteClean);
 
   var order=[];
 
-  /*
-    Remote order first: this preserves what the team already sees.
-    Local-only rows are then appended in the exact order the local
-    member created them.
-  */
-  (remoteRows||[]).forEach(function(r){
-    if(r && r._id && order.indexOf(r._id)===-1){
-      order.push(r._id);
-    }
+  remoteClean.forEach(function(r){
+    if(r && r._id && order.indexOf(r._id)===-1) order.push(r._id);
   });
 
-  (localRows||[]).forEach(function(r){
-    if(r && r._id && order.indexOf(r._id)===-1){
-      order.push(r._id);
-    }
+  localClean.forEach(function(r){
+    if(r && r._id && order.indexOf(r._id)===-1) order.push(r._id);
   });
 
   var conflicts=[];
   var result=[];
 
   order.forEach(function(id){
-    var baseRow=baseMap[id]||null;
-    var localRow=localMap[id]||null;
-    var remoteRow=remoteMap[id]||null;
-
-    var res=mergeRowThreeWay(baseRow,localRow,remoteRow,{rowId:id});
+    var res=mergeRowThreeWay(
+      baseMap[id]||null,
+      localMap[id]||null,
+      remoteMap[id]||null,
+      {rowId:id}
+    );
 
     if(res.conflicts && res.conflicts.length){
       conflicts=conflicts.concat(res.conflicts);
     }
 
-    if(res.row){
+    if(res.row && !rowEmpty(res.row)){
       result.push(res.row);
     }
   });
 
-  return {
-    rows:result,
-    conflicts:conflicts
-  };
-}
-
-function rosterStatusFrom(sheet,name){
-  if(hasName(sheet && sheet.confirmed,name)) return "ok";
-  if(hasName(sheet && sheet.leave,name)) return "leave";
-  return "pending";
-}
-
-// Merge roster status per member, allowing removals (e.g. izin -> pending).
-// A plain union of arrays cannot represent deletion and caused stale status to return.
-function mergeRosterStatus(base,local,remote,conflicts){
-  var mergedConfirmed=[], mergedLeave=[];
-  ALL_ROSTER.forEach(function(name){
-    var b=rosterStatusFrom(base,name);
-    var l=rosterStatusFrom(local,name);
-    var r=rosterStatusFrom(remote,name);
-    var lc=l!==b, rc=r!==b;
-    var chosen;
-    if(lc && !rc) chosen=l;
-    else if(!lc && rc) chosen=r;
-    else if(l===r) chosen=l;
-    else if(lc && rc){
-      conflicts.push({kind:"roster-status",field:"status:"+name,localValue:l,remoteValue:r,rowId:null});
-      chosen=r; // remote wins simultaneous contradictory edits for the same member
-    }else chosen=r;
-    if(chosen==="ok") mergedConfirmed.push(name);
-    else if(chosen==="leave") mergedLeave.push(name);
-  });
-  return {confirmed:mergedConfirmed,leave:mergedLeave};
+  return {rows:result,conflicts:conflicts};
 }
 
 function mergeSheetThreeWay(base,local,remote){
@@ -2875,14 +3854,17 @@ function mergeSheetThreeWay(base,local,remote){
     merged[field]=mergeScalar(field);
   });
 
-  // Contributor history is additive; roster status is a per-member value
-  // merged against baseline so status removals are persisted correctly.
+  // Contributor/confirmation metadata is set-like. Use union so one
+  // member's confirmation cannot erase another member's confirmation.
   merged.contributors=canonicalContributorList(
     (remote.contributors||[]).concat(local.contributors||[])
   );
-  var rosterMerged=mergeRosterStatus(base,local,remote,conflicts);
-  merged.confirmed=rosterMerged.confirmed;
-  merged.leave=rosterMerged.leave;
+  merged.confirmed=canonicalContributorList(
+    (remote.confirmed||[]).concat(local.confirmed||[])
+  );
+  merged.leave=canonicalContributorList(
+    (remote.leave||[]).concat(local.leave||[])
+  );
 
   /*
     Date is immutable. updated metadata is always replaced after a
@@ -2912,8 +3894,27 @@ function summarizeMergeConflicts(conflicts){
     : "Perubahan bersamaan terdeteksi; data yang sudah tersimpan dipertahankan.";
 }
 
+function confirmCurrentMemberOnEdit(){
+  var current=resolveMemberName(state.me.name);
+  if(!isCoreMember(current)) return;
+
+  // Begitu member melakukan perubahan nyata pada lembar, member tersebut
+  // dianggap sudah mengisi/meninjau tanggal ini. Pastikan status lokal
+  // langsung menjadi hijau dan tetap aman saat payload disimpan.
+  state.sheet.contributors=canonicalContributorList(
+    (state.sheet.contributors||[]).concat([current])
+  );
+  state.sheet.confirmed=canonicalContributorList(
+    (state.sheet.confirmed||[]).concat([current])
+  );
+  state.sheet.leave=(state.sheet.leave||[]).filter(function(x){
+    return normalizePersonName(x)!==normalizePersonName(current);
+  });
+}
+
 function markDirty(){
   if(!state.canWrite) return;
+  confirmCurrentMemberOnEdit();
   state.dirty=true; setPill("saving","Menyimpan…");
   clearTimeout(saveTimer);
   saveTimer=setTimeout(doSave,900);
@@ -2944,16 +3945,22 @@ function body(source){
   confirmed=[].filter.call(confirmed,function(n,i,a){return a.indexOf(n)===i;});
   leave=[].filter.call(leave,function(n,i,a){return a.indexOf(n)===i;});
 
-  // Do not auto-confirm on every save: only the explicit confirmation action
-  // may change pending -> confirmed. This preserves izin -> pending changes.
+  if(isCoreMember(currentShort)){
+    if(!hasName(confirmed,currentShort)) confirmed.push(currentShort);
+    leave=leave.filter(function(x){
+      return normalizePersonName(x)!==normalizePersonName(currentShort);
+    });
+  }
 
   s.confirmed=confirmed;
   s.leave=leave;
 
   return {
     date:s.date,
-    delivery:(s.delivery||[]).map(function(r){return Object.assign({},r)}),
-    pickup:(s.pickup||[]).map(function(r){return Object.assign({},r)}),
+    delivery:legacyRows(s,"delivery").map(function(r){return Object.assign({},r)}),
+    pickup:legacyRows(s,"pickup").map(function(r){return Object.assign({},r)}),
+    deliveryByOwner:ownerBuckets(s,"delivery"),
+    pickupByOwner:ownerBuckets(s,"pickup"),
     nihil:!!s.nihil,
     prepareBy:s.prepareBy||"", checkedBy:s.checkedBy||"", approvalBy:s.approvalBy||"",
     updatedAt:new Date().toISOString(),
@@ -2970,10 +3977,55 @@ function isVoid(s){
     && !(s.confirmed&&s.confirmed.length) && !(s.leave&&s.leave.length);
 }
 
+function rowsNewSinceBase(baseRows,localRows){
+  var baseMap=rowMap(baseRows||[]);
+  return (localRows||[]).filter(function(r){
+    return r && !rowEmpty(r) && r._id && !baseMap[r._id];
+  });
+}
+
+function atomicAppendNewRows(ref,baseSheet,localSheet){
+  var addsD=rowsNewSinceBase(baseSheet.delivery,localSheet.delivery);
+  var addsP=rowsNewSinceBase(baseSheet.pickup,localSheet.pickup);
+
+  if(!addsD.length && !addsP.length){
+    return Promise.resolve();
+  }
+
+  /*
+    IMPORTANT:
+    Firestore arrayUnion is atomic. Two users can append different row
+    objects to the same array without one append replacing the other.
+    This is the hard guarantee for simultaneous +Delivery/+Pickup.
+  */
+  var payload={};
+  if(addsD.length){
+    payload.delivery=firebase.firestore.FieldValue.arrayUnion.apply(
+      firebase.firestore.FieldValue,addsD
+    );
+  }
+  if(addsP.length){
+    payload.pickup=firebase.firestore.FieldValue.arrayUnion.apply(
+      firebase.firestore.FieldValue,addsP
+    );
+  }
+
+  return ref.set(payload,{merge:true});
+}
+
 function doSave(){
   if(!state.db) return;
+
   if(state.saving){
     state.pending=true;
+    return;
+  }
+
+  var owner=ownerShort(state.me.name);
+  if(!owner){
+    state.saving=false;
+    setPill("error","Member belum terverifikasi");
+    toast("Tidak bisa menyimpan","Member belum dikenali.");
     return;
   }
 
@@ -2983,111 +4035,131 @@ function doSave(){
   var ref=state.db.doc("sheets/"+dateKey);
 
   /*
-    Snapshot the local work and its server baseline NOW.
-    Any edits made while the transaction is running are kept in
-    state.sheet and will be saved in the next pending pass.
+    IMPORTANT — OWNER BUCKET SAVE
+    -----------------------------
+    Delivery and Pickup are partitioned by member:
+      deliveryByOwner.Eka
+      deliveryByOwner.Bayu
+      deliveryByOwner.Sultan
+      deliveryByOwner.Ferry
+      deliveryByOwner.Fazin
+
+    A member writes ONLY his/her own bucket. This means:
+      Eka saves -> does NOT rewrite Bayu/Fazin
+      Fazin saves -> does NOT rewrite Eka/Bayu
+
+    This is intentionally NOT a whole-document set(body()).
   */
-  var localAtSave=cloneSheet(state.sheet);
-  var baseAtSave=cloneSheet(state.baseSheet);
+  var payload={};
+
+  ["delivery","pickup"].forEach(function(kind){
+    var ownerRows=(state.sheet[kind]||[])
+      .filter(function(r){
+        return r && !rowEmpty(r) && rowOwner(r)===owner;
+      })
+      .map(function(r){
+        var x=Object.assign({},r);
+        x._storage="owner";
+        x._owner=owner;
+        x._ownerOrder=ownerOrder(owner);
+        if(!x._seq || !isFinite(Number(x._seq))){
+          x._seq=1;
+        }
+        return x;
+      });
+
+    payload[kind+"ByOwner."+owner]=ownerRows;
+  });
 
   /*
-      Firestore retries this transaction whenever another member changes
-      the same document between the read and commit. The merge functions
-      above make concurrent ADDs independent by stable _id, so:
-        A creates row _id=A
-        B creates row _id=B
-      -> final document contains BOTH rows.
-    */
-  state.db.runTransaction(function(tx){
-    return tx.get(ref).then(function(doc){
-      var remote=normalize(doc.exists?doc.data():null,dateKey);
+    Legacy rows are kept separate. Only update them when the local sheet
+    actually contains legacy rows; new member rows never enter this path.
+  */
+  ["delivery","pickup"].forEach(function(kind){
+    var legacy=(state.sheet[kind]||[])
+      .filter(function(r){return r && !rowEmpty(r) && !rowOwner(r);})
+      .map(function(r){return Object.assign({},r,{_storage:"legacy"});});
 
-      var mergedResult=mergeSheetThreeWay(
-        baseAtSave,
-        localAtSave,
-        remote
-      );
+    if(legacy.length || legacyChanged(state.baseSheet,state.sheet,kind)){
+      payload[kind]=legacy;
+    }
+  });
 
-      var merged=mergedResult.sheet;
-      var payload=body(merged);
+  // Metadata is shared but should never erase another member's row bucket.
+  var base=state.baseSheet||blank(dateKey);
+  ["nihil","prepareBy","checkedBy","approvalBy"].forEach(function(field){
+    if(String(base[field]||"")!==String(state.sheet[field]||"")){
+      payload[field]=state.sheet[field];
+    }
+  });
 
-      if(isVoid(merged)){
-        tx.delete(ref);
-      }else{
-        tx.set(ref,payload,{merge:false});
-      }
+  payload.date=dateKey;
+  payload.updatedAt=new Date().toISOString();
+  payload.updatedByName=resolveMemberName(state.me.name)||"Anggota";
+  payload.updatedByUid=state.me.id||"anon";
 
-      return {
-        merged:merged,
-        payload:payload,
-        conflicts:mergedResult.conflicts||[]
-      };
-    });
-  }).then(function(result){
+  // Contributors / confirmation are set-like. Merge with the current local
+  // values, but do not clear another member's confirmation.
+  payload.contributors=canonicalContributorList(
+    (base.contributors||[]).concat(state.sheet.contributors||[],[owner])
+  );
+  payload.confirmed=canonicalContributorList(
+    (base.confirmed||[]).concat(state.sheet.confirmed||[],[owner])
+  );
+  // Keep the in-memory sheet aligned with the exact confirmation payload.
+  // This prevents a realtime refresh from briefly showing the current
+  // member as pending after a successful save.
+  state.sheet.contributors=payload.contributors.slice();
+  state.sheet.confirmed=payload.confirmed.slice();
+  state.sheet.leave=canonicalContributorList(
+    (base.leave||[]).concat(state.sheet.leave||[])
+  );
+
+  /*
+    update() is atomic at Firestore field level. Since each member updates
+    a different nested owner field, simultaneous writes do not replace the
+    other member's Delivery/Pickup bucket.
+  */
+  var savePromise;
+
+  if(state.sheetExists===false){
+    savePromise=ref.set(payload,{merge:true});
+  }else{
+    savePromise=ref.set(payload,{merge:true});
+  }
+
+  savePromise.then(function(){
     state.saving=false;
 
-    // The merged result becomes the new baseline for anything typed
-    // while the transaction was running.
-    state.baseSheet=cloneSheet(result.merged);
-
     /*
-      If a realtime listener delivered a remote snapshot during the
-      transaction, it can be older than the just-committed transaction.
-      Do not let that stale snapshot overwrite the successful merge.
+      The local sheet remains authoritative for the fields just saved.
+      Do not adopt a stale pending realtime snapshot here.
     */
-    if(
-      state.pendingRemote &&
-      result.merged.updatedAt &&
-      state.pendingRemote.updatedAt &&
-      state.pendingRemote.updatedAt<=result.merged.updatedAt
-    ){
-      state.pendingRemote=null;
-    }
-
-    if(result.conflicts && result.conflicts.length){
-      toast(
-        "Perubahan tersimpan · konflik ditangani",
-        summarizeMergeConflicts(result.conflicts)
-      );
-    }else{
-      setPill("idle","Tersimpan");
-    }
+    state.pendingRemote=null;
+    state.baseSheet=cloneSheet(state.sheet);
 
     if(state.pending){
-      // More typing occurred during the first save.
       state.pending=false;
-      // Keep dirty=true and save the newer local state against the
-      // just-committed baseline.
       doSave();
       return;
     }
 
-    state.sheet=cloneSheet(result.merged);
     state.dirty=false;
+    if(typeof window.batchReconcileAfterSheetSave==="function") window.batchReconcileAfterSheetSave();
     setPill("idle","Tersimpan");
-
-    if(state.pendingRemote){
-      adoptRemote();
-    }
   }).catch(function(err){
     state.saving=false;
+    console.error(err);
 
-    if(err && err.code==="permission-denied"){
-      setPill("error","Ditolak Firestore");
-      toast(
-        "Firestore menolak permintaan",
-        "Cek: Anonymous sign-in sudah aktif? Security rules sudah ditempel dengan benar?"
-      );
-    }else{
-      setPill("error","Gagal simpan");
-      toast(
-        "Gagal menyimpan",
-        "Perubahan tetap ada di layar. Sistem akan mencoba menyimpan kembali."
-      );
-      setTimeout(function(){
-        if(state.dirty) doSave();
-      },4000);
-    }
+    setPill("error","Gagal simpan");
+    toast(
+      "Gagal menyimpan",
+      "Perubahan tetap ada di layar. Sistem akan mencoba kembali."
+    );
+
+    setTimeout(function(){
+      if(state.dirty) doSave();
+    },3000);
   });
 }
 
@@ -3265,7 +4337,7 @@ function rowsToAgg(raw,keyDate){
   raw=raw||{};
 
   ["delivery","pickup"].forEach(function(kind){
-    (raw[kind]||[]).forEach(function(r){
+    rawRowsForKind(raw,kind,keyDate).forEach(function(r){
       if(rowEmpty(r)) return;
 
       if(r.status==="ok"){
@@ -4290,7 +5362,7 @@ function renderCalendar(){
       var dots=el("span","dots");
       if(ix.d) dots.appendChild(el("i","d"));
       if(ix.p) dots.appendChild(el("i","p"));
-      if(!ix.d && !ix.p && ix.nihil) dots.appendChild(el("i","n"));
+      if(!ix.d && !ix.p && ((ix.confirmed&&ix.confirmed.length) || ix.nihil)) dots.appendChild(el("i","n"));
       b.appendChild(dots);
       b.title=summaryText(ix);
     }
@@ -4299,7 +5371,10 @@ function renderCalendar(){
 }
 function summaryText(ix){
   if(!ix) return "Belum ada rencana";
-  if(!ix.d && !ix.p) return ix.nihil?"Nihil — sudah dikonfirmasi":"Belum ada rencana";
+  if(!ix.d && !ix.p){
+    if(ix.confirmed && ix.confirmed.length) return "Konfirmasi tim — "+ix.confirmed.length+" member";
+    return ix.nihil?"Konfirmasi tim (data lama)":"Belum ada rencana";
+  }
   var p=[];
   if(ix.d) p.push(ix.d+" delivery");
   if(ix.p) p.push(ix.p+" pick up");
@@ -4321,17 +5396,21 @@ function renderTomorrow(){
 /* ───────────────────── date selection + live doc ───────────────────── */
 var unsubDoc=null;
 function selectDate(k,fromRemote){
+  if(state.batch && state.batch.open){ try{document.getElementById("batchDialog").close();}catch(e){} }
   if(state.dirty) { clearTimeout(saveTimer); doSave(); }
   state.sel=k;
   state.month=parseKey(k);
   state.sheet=blank(k);
   state.baseSheet=blank(k);
+  state.sheetExists=false;
   state.pendingRemote=null;
+  state.createdRowIds={};
   renderCalendar(); renderSheet(); if(!document.getElementById("reportFrom").value) syncReportInputs(true); else syncReportInputs(false); renderDashboard(); setPill("idle","Memuat…");
   if(unsubDoc){ unsubDoc(); unsubDoc=null; }
   if(!state.db){ state.baseSheet=cloneSheet(state.sheet); setPill("ro","Mode contoh"); return; }
   unsubDoc=state.db.doc("sheets/"+k).onSnapshot(function(snap){
     var raw=snap.exists?snap.data():null;
+    state.sheetExists=!!snap.exists;
     var incoming=normalize(raw,k);
     if(snap.metadata.hasPendingWrites) return;
     if(state.dirty || state.saving || isEditingSheet()){
@@ -4532,12 +5611,14 @@ function subscribeIndex(){
 
     snap.docs.forEach(function(d){
       var v=d.data()||{};
+      var ns=normalize(v,d.id);
       idx[d.id]={
-        d:(v.delivery||[]).filter(function(r){return !rowEmpty(r)}).length,
-        p:(v.pickup||[]).filter(function(r){return !rowEmpty(r)}).length,
-        dRows:(v.delivery||[]).filter(function(r){return !rowEmpty(r)}).map(notificationRow),
-        pRows:(v.pickup||[]).filter(function(r){return !rowEmpty(r)}).map(notificationRow),
-        nihil:!!v.nihil, updatedAt:v.updatedAt||"", updatedByName:v.updatedByName||""
+        d:ns.delivery.length,
+        p:ns.pickup.length,
+        dRows:ns.delivery.map(notificationRow),
+        pRows:ns.pickup.map(notificationRow),
+        nihil:!!ns.nihil, confirmed:(ns.confirmed||[]).map(resolveMemberName).filter(Boolean),
+        updatedAt:ns.updatedAt||"", updatedByName:ns.updatedByName||""
       };
     });
 
@@ -4614,7 +5695,7 @@ function checkReminder(){
   var target = (dow===6) ? addDays(now,2) : addDays(now,1);   // Sabtu lompat Minggu, target Senin
   reminderTarget=key(target);
   var ix=state.index[reminderTarget];
-  if(ix && (ix.d||ix.p||ix.nihil)) return;         // sudah ada isinya, tak perlu ditanya
+  if(ix && (ix.d||ix.p||ix.nihil||(ix.confirmed&&ix.confirmed.length))) return;         // sudah ada aktivitas/konfirmasi
   if(remDlg.open) return;
   document.getElementById("remSub").textContent="Untuk "+longDate(reminderTarget)+" belum ada satu pun item.";
   remDlg.returnValue="";
@@ -4626,10 +5707,15 @@ remDlg.addEventListener("close",function(){
   if(remDlg.returnValue==="open"){
     lsSet(reminderKey(),"1"); selectDate(tmr);
     setTimeout(function(){ addRow("delivery"); },200);
-  }else if(remDlg.returnValue==="none"){
+  }else if(remDlg.returnValue==="confirm"){
     lsSet(reminderKey(),"1");
     selectDate(tmr);
-    setTimeout(function(){ state.sheet.nihil=true; markDirty(); renderSheet(); toast(longDate(tmr)+" ditandai nihil",""); },300);
+    setTimeout(function(){
+      if(state.canWrite){
+        confirmMine();
+        toast(longDate(tmr)+" dikonfirmasi ke tim","");
+      }
+    },450);
   }else{
     /* "Nanti saja" — tanya lagi 45 menit berikutnya */
     setTimeout(function(){ checkReminder(); },45*60*1000);
@@ -4679,10 +5765,19 @@ function colorFromName(name){
 function applyMemberProfile(profile){
   state.me.name=profile.short;
   state.me.fullName=profile.full;
-  state.me.role=profile.optional?"viewer":"engineering";
+  state.me.role=profile.readOnly?"viewer":(profile.optional?"viewer":"engineering");
+  state.canWrite=!profile.readOnly;
   lsSet("jsmold_name",profile.full);
 
   document.getElementById("meName").textContent=profile.short;
+
+  // Read-only JSMOLD account can browse/print only.
+  [
+    "addDel","addPick","batchInputBtn","teamConfirmBtn"
+  ].forEach(function(id){
+    var e=document.getElementById(id);
+    if(e) e.disabled=!state.canWrite;
+  });
 
   var av=document.getElementById("meAvatar");
   av.textContent=initials(profile.short);
@@ -4704,13 +5799,36 @@ function applyMe(){
 
 var nameDlg=document.getElementById("nameDialog");
 
+/*
+  LOGIN GATE
+  ---------
+  This is a client-side access gate. It is intended to prevent casual
+  unauthorized use of the page. For real security, the credentials should
+  be moved to Firebase Authentication / server-side rules because any
+  browser-delivered HTML can be inspected by a determined user.
+*/
+var LOGIN_CREDENTIALS={
+  "eka":"eng5",
+  "bayu":"eng3",
+  "sultan":"eng2",
+  "ferry":"eng1",
+  "fazin":"mkt01",
+  "jsmold":"123"
+};
+
+function loginCredentialKey(raw){
+  return normalizePersonName(raw).replace(/\s+/g,"");
+}
+
 function askName(prefill){
   document.getElementById("f_myname").value=prefill||"";
+  document.getElementById("f_mypass").value="";
+  document.getElementById("loginHint").textContent="Masukkan user dan password yang terdaftar.";
   nameDlg.returnValue="";
   nameDlg.showModal();
-
   setTimeout(function(){
-    document.getElementById("f_myname").focus();
+    if(prefill) document.getElementById("f_mypass").focus();
+    else document.getElementById("f_myname").focus();
   },60);
 }
 
@@ -4718,36 +5836,54 @@ nameDlg.addEventListener("close",function(){
   if(nameDlg.returnValue!=="save") return;
 
   var raw=document.getElementById("f_myname").value.trim();
+  var pass=document.getElementById("f_mypass").value;
 
   if(!raw){
-    toast("Nama wajib diisi","Masukkan nama lengkap sesuai daftar member engineering.");
+    document.getElementById("loginHint").textContent="User wajib diisi.";
+    toast("Login gagal","Masukkan user member.");
     setTimeout(function(){askName("");},80);
     return;
   }
 
   var profile=resolveMemberProfile(raw);
-
   if(!profile){
-    toast(
-      "Bukan member engineering",
-      "Nama \""+raw+"\" tidak terdaftar. Gunakan salah satu nama member yang sudah terverifikasi."
-    );
+    document.getElementById("loginHint").textContent="User tidak terdaftar.";
+    toast("Login gagal","User tidak terdaftar.");
+    setTimeout(function(){askName(raw);},120);
+    return;
+  }
+
+  var keyName=loginCredentialKey(profile.short);
+  if(LOGIN_CREDENTIALS[keyName]===undefined || pass!==LOGIN_CREDENTIALS[keyName]){
+    document.getElementById("loginHint").textContent="Password salah. Coba lagi.";
+    toast("Login gagal","Password tidak sesuai.");
     setTimeout(function(){askName(raw);},120);
     return;
   }
 
   applyMemberProfile(profile);
+  // Remember only the selected user on this browser/device.
+  // Do NOT store the password.
+  lsSet("jsmold_remembered_user", profile.short);
   renderConfirmBar();
   renderSheet();
 
   toast(
-    "Member terverifikasi",
-    profile.short+(profile.optional?" · akses viewer/helper":" · member engineering")
+    "Login berhasil",
+    profile.short+(profile.readOnly?" · mode lihat saja":(profile.optional?" · viewer/helper":" · member engineering"))
   );
 });
 
+// "ganti" = log out this remembered session, then ask for credentials again.
 document.getElementById("changeName").onclick=function(){
-  askName(state.me.fullName||state.me.name||"");
+  lsSet("jsmold_remembered_user","");
+  lsSet("jsmold_name","");
+  state.me.name="";
+  state.me.fullName="";
+  state.me.role="";
+  state.canWrite=false;
+  applyMe();
+  askName("");
 };
 
 /* ───────────────────── LANGKAH 1: konfigurasi Firebase-mu ─────────────────────
@@ -4781,16 +5917,12 @@ renderCalendar(); renderSheet(); renderTomorrow(); setPill("idle","Menghubungkan
     return;
   }
   var storedName=lsGet("jsmold_name","");
-  var storedProfile=resolveMemberProfile(storedName);
-
-  if(storedProfile){
-    applyMemberProfile(storedProfile);
-  }else{
-    state.me.name="";
-    state.me.fullName="";
-    state.me.role="";
-    applyMe();
-  }
+  var rememberedUser=lsGet("jsmold_remembered_user","");
+  state.me.name="";
+  state.me.fullName="";
+  state.me.role="";
+  state.canWrite=false;
+  applyMe();
 
   firebase.auth().signInAnonymously().then(function(cred){
     state.me.id=cred.user.uid;
@@ -4801,8 +5933,16 @@ renderCalendar(); renderSheet(); renderTomorrow(); setPill("idle","Menghubungkan
     updateBadge();
     checkReminder();
 
-    if(!storedProfile){
-      askName("");
+    // If this browser/device has a remembered login, restore it without
+    // asking for the password again. Password is never stored locally.
+    var rememberedProfile=resolveMemberProfile(rememberedUser||storedName);
+    if(rememberedProfile){
+      applyMemberProfile(rememberedProfile);
+      renderConfirmBar();
+      renderSheet();
+      toast("Login otomatis",rememberedProfile.short+" · perangkat ini diingat");
+    }else{
+      askName(storedName?resolveMemberProfile(storedName)?.short:"");
     }
   }).catch(function(err){
     setPill("error","Gagal masuk");
