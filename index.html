@@ -2815,6 +2815,35 @@ function mergeRowsThreeWay(baseRows,localRows,remoteRows){
   };
 }
 
+function rosterStatusFrom(sheet,name){
+  if(hasName(sheet && sheet.confirmed,name)) return "ok";
+  if(hasName(sheet && sheet.leave,name)) return "leave";
+  return "pending";
+}
+
+// Merge roster status per member, allowing removals (e.g. izin -> pending).
+// A plain union of arrays cannot represent deletion and caused stale status to return.
+function mergeRosterStatus(base,local,remote,conflicts){
+  var mergedConfirmed=[], mergedLeave=[];
+  ALL_ROSTER.forEach(function(name){
+    var b=rosterStatusFrom(base,name);
+    var l=rosterStatusFrom(local,name);
+    var r=rosterStatusFrom(remote,name);
+    var lc=l!==b, rc=r!==b;
+    var chosen;
+    if(lc && !rc) chosen=l;
+    else if(!lc && rc) chosen=r;
+    else if(l===r) chosen=l;
+    else if(lc && rc){
+      conflicts.push({kind:"roster-status",field:"status:"+name,localValue:l,remoteValue:r,rowId:null});
+      chosen=r; // remote wins simultaneous contradictory edits for the same member
+    }else chosen=r;
+    if(chosen==="ok") mergedConfirmed.push(name);
+    else if(chosen==="leave") mergedLeave.push(name);
+  });
+  return {confirmed:mergedConfirmed,leave:mergedLeave};
+}
+
 function mergeSheetThreeWay(base,local,remote){
   base=base||blank(local.date||remote.date||today);
   local=local||blank(base.date);
@@ -2846,17 +2875,14 @@ function mergeSheetThreeWay(base,local,remote){
     merged[field]=mergeScalar(field);
   });
 
-  // Contributor/confirmation metadata is set-like. Use union so one
-  // member's confirmation cannot erase another member's confirmation.
+  // Contributor history is additive; roster status is a per-member value
+  // merged against baseline so status removals are persisted correctly.
   merged.contributors=canonicalContributorList(
     (remote.contributors||[]).concat(local.contributors||[])
   );
-  merged.confirmed=canonicalContributorList(
-    (remote.confirmed||[]).concat(local.confirmed||[])
-  );
-  merged.leave=canonicalContributorList(
-    (remote.leave||[]).concat(local.leave||[])
-  );
+  var rosterMerged=mergeRosterStatus(base,local,remote,conflicts);
+  merged.confirmed=rosterMerged.confirmed;
+  merged.leave=rosterMerged.leave;
 
   /*
     Date is immutable. updated metadata is always replaced after a
@@ -2918,12 +2944,8 @@ function body(source){
   confirmed=[].filter.call(confirmed,function(n,i,a){return a.indexOf(n)===i;});
   leave=[].filter.call(leave,function(n,i,a){return a.indexOf(n)===i;});
 
-  if(isCoreMember(currentShort)){
-    if(!hasName(confirmed,currentShort)) confirmed.push(currentShort);
-    leave=leave.filter(function(x){
-      return normalizePersonName(x)!==normalizePersonName(currentShort);
-    });
-  }
+  // Do not auto-confirm on every save: only the explicit confirmation action
+  // may change pending -> confirmed. This preserves izin -> pending changes.
 
   s.confirmed=confirmed;
   s.leave=leave;
