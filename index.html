@@ -1279,6 +1279,38 @@ dialog .df{padding:12px 16px 14px; display:flex; gap:8px; justify-content:flex-e
   .dash-field{min-width:130px;flex:1}
 }
 
+/* ─────────── read-only safety ─────────── */
+body.app-readonly .rowdel{display:none !important; pointer-events:none !important;}
+body.app-readonly #printBtn,
+body.app-readonly #pdfRangeBtn{opacity:.52 !important; cursor:not-allowed !important;}
+
+/* ─────────── login dialog header / company kop ─────────── */
+#nameDialog .login-kop{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px 10px;
+  border-bottom:1px solid var(--line-soft);
+  background:var(--panel);
+}
+#nameDialog .login-logo{
+  width:74px; height:42px; object-fit:contain; flex:none;
+}
+#nameDialog .login-kop-text{min-width:0; flex:1}
+#nameDialog .login-kop-title{
+  margin:0; font-size:14px; font-weight:700; letter-spacing:.025em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+#nameDialog .login-kop-sub{
+  margin-top:2px; font-size:10.5px; color:var(--muted);
+}
+#nameDialog .login-kop-company{
+  margin-top:2px; font-size:9.5px; color:var(--muted);
+}
+@media(max-width:560px){
+  #nameDialog .login-kop{padding:11px 13px 9px}
+  #nameDialog .login-logo{width:64px;height:36px}
+  #nameDialog .login-kop-title{font-size:13px}
+}
+
 /* ─────────── guest / logged-out lock ─────────── */
 body.app-locked{overflow:hidden}
 body.app-locked > *:not(#nameDialog):not(#setupGate):not(#guestLock){
@@ -2076,6 +2108,14 @@ body.capturing .sheet{box-shadow:none}
 
 <dialog id="nameDialog">
   <form method="dialog">
+    <div class="login-kop">
+      <img class="login-logo" id="loginLogo" alt="JSMOLD">
+      <div class="login-kop-text">
+        <div class="login-kop-title">MOLD TRANSFER REQUEST SHEET</div>
+        <div class="login-kop-sub">Engineering → Production</div>
+        <div class="login-kop-company">PT. JUNGWOO SHINHWA MOLD</div>
+      </div>
+    </div>
     <div class="dh"><h3>Verifikasi member</h3><p>Masukkan nama lengkap sesuai daftar member engineering.</p></div>
     <div class="db">
       <div class="field"><label for="f_myname">Nama / user</label><input id="f_myname" autocomplete="username" placeholder="mis. Eka"></div>
@@ -2857,6 +2897,10 @@ document.getElementById("teamConfirmBtn").onclick=function(){
   confirmMine();
 };
 document.getElementById("printBtn").onclick=function(){
+  if(!state.canWrite){
+    toast("Cetak tidak diizinkan","Akun ini hanya memiliki akses lihat saja.");
+    return;
+  }
   try{ window.print(); }catch(err){ toast("Cetak tidak bisa dibuka","Coba buka lembar ini di tab sendiri, lalu cetak."); }
 };
 function greetingText(dateKey){
@@ -4883,6 +4927,10 @@ async function captureSheetToCanvas(){
 }
 
 async function exportPDFRange(){
+  if(!state.canWrite){
+    toast("Export tidak diizinkan","Akun ini tidak memiliki izin PDF + PPT.");
+    return;
+  }
   var range=getExportRange();
   if(!validateExportRange(range)) return;
   if(!await ensurePdfLibrary()) return;
@@ -5040,6 +5088,7 @@ function pptStatText(slide,x,y,w,title,value,sub){
 }
 
 async function exportPowerPointRange(docs,range,showToast){
+  if(!state.canWrite) throw new Error("Akun ini tidak memiliki izin membuat PowerPoint.");
   if(!await ensurePptLibrary()) throw new Error("Library PowerPoint tidak tersedia.");
   var PptxGenJS=window.PptxGenJS;
   if(!PptxGenJS) throw new Error("PptxGenJS tidak tersedia.");
@@ -5288,6 +5337,10 @@ async function printRangeNative(docs,range){
 }
 
 async function exportPDFRange(){
+  if(!state.canWrite){
+    toast("Export tidak diizinkan","Akun ini tidak memiliki izin PDF + PPT.");
+    return;
+  }
   var range=getExportRange();
   if(!validateExportRange(range)) return;
 
@@ -5337,6 +5390,7 @@ document.getElementById("reportTo").addEventListener("change",function(){
   var p=document.getElementById("reportPreset");
   if(p) p.value="";
 });
+document.getElementById("pdfRangeBtn").title="PDF + PPT hanya untuk member yang memiliki hak tulis";
 document.getElementById("pdfRangeBtn").onclick=exportPDFRange;
 
 
@@ -5820,6 +5874,7 @@ function applyMemberProfile(profile){
   state.me.role=profile.readOnly?"viewer":(profile.optional?"viewer":"engineering");
   state.canWrite=!profile.readOnly;
   lsSet("jsmold_name",profile.full);
+  document.body.classList.toggle("app-readonly",!state.canWrite);
   document.body.classList.remove("app-locked");
   var guestLock=document.getElementById("guestLock");
   if(guestLock) guestLock.hidden=true;
@@ -5830,10 +5885,13 @@ function applyMemberProfile(profile){
 
   // Read-only JSMOLD account can browse/print only.
   [
-    "addDel","addPick","batchInputBtn","teamConfirmBtn"
+    "addDel","addPick","batchInputBtn","teamConfirmBtn","printBtn","pdfRangeBtn"
   ].forEach(function(id){
     var e=document.getElementById(id);
-    if(e) e.disabled=!state.canWrite;
+    if(e){
+      e.disabled=!state.canWrite;
+      if(!state.canWrite && (id==="printBtn" || id==="pdfRangeBtn")) e.title="Tidak diizinkan untuk akun lihat saja";
+    }
   });
 
   var av=document.getElementById("meAvatar");
@@ -5848,6 +5906,7 @@ function applyMe(){
     return;
   }
 
+  document.body.classList.remove("app-readonly");
   document.body.classList.add("app-locked");
   var guestLock=document.getElementById("guestLock");
   if(guestLock) guestLock.hidden=false;
@@ -5860,6 +5919,9 @@ function applyMe(){
 }
 
 var nameDlg=document.getElementById("nameDialog");
+var loginLogo=document.getElementById("loginLogo");
+var sourceLogo=document.querySelector(".brandmark img");
+if(loginLogo && sourceLogo) loginLogo.src=sourceLogo.src;
 var guestLoginBtn=document.getElementById("guestLoginBtn");
 if(guestLoginBtn) guestLoginBtn.onclick=function(){ askName(""); };
 
