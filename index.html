@@ -4151,7 +4151,11 @@ function doSave(){
         return x;
       });
 
-    payload[kind+"ByOwner."+owner]=ownerRows;
+    // Use a nested map with merge:true. Dotted keys in set() can be
+    // interpreted as literal field names by Firestore; that made newly
+    // added owner rows appear briefly in the local UI but not reload.
+    if(!payload[kind+"ByOwner"]) payload[kind+"ByOwner"]={};
+    payload[kind+"ByOwner"][owner]=ownerRows;
   });
 
   /*
@@ -4199,9 +4203,8 @@ function doSave(){
   );
 
   /*
-    update() is atomic at Firestore field level. Since each member updates
-    a different nested owner field, simultaneous writes do not replace the
-    other member's Delivery/Pickup bucket.
+    Merge nested owner maps. Each save writes only this member's bucket;
+    Firestore merge preserves sibling owner fields.
   */
   var savePromise;
 
