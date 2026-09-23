@@ -452,6 +452,20 @@ dialog .df{padding:12px 16px 14px; display:flex; gap:8px; justify-content:flex-e
 .batch-table tbody tr.sel{background:color-mix(in srgb,var(--brand) 7%,var(--panel))}
 .batch-table tbody tr.err{background:color-mix(in srgb,var(--warn) 9%,var(--panel))}
 .batch-table td.error-cell{color:var(--warn);font-weight:600}
+.batch-inline-edit{
+  width:100%; min-width:0; border:1px solid transparent; border-radius:6px;
+  background:transparent; color:inherit; padding:4px 5px; font:inherit;
+  line-height:1.25; outline:none;
+}
+.batch-inline-edit:hover{border-color:var(--line);background:var(--panel)}
+.batch-inline-edit:focus{
+  border-color:var(--brand); background:var(--panel);
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--brand) 13%,transparent);
+}
+.batch-preview-note{
+  padding:8px 12px; border-top:1px solid var(--line-soft);
+  background:var(--panel-2); color:var(--muted); font-size:11.5px;
+}
 .batch-paste-box{padding:12px}
 .batch-paste-help{font-size:11.5px;color:var(--muted);line-height:1.55;margin-bottom:8px}
 .batch-paste-input{width:100%;min-height:150px;resize:vertical;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}
@@ -1284,7 +1298,78 @@ body.app-readonly .rowdel{display:none !important; pointer-events:none !importan
 body.app-readonly #printBtn,
 body.app-readonly #pdfRangeBtn{opacity:.52 !important; cursor:not-allowed !important;}
 
+
+/* ─────────── notification tabs + login activity ─────────── */
+.notif-tabs{
+  display:flex; gap:6px; padding:8px 10px; border-bottom:1px solid var(--line-soft);
+  background:var(--panel-2);
+}
+.notif-tab{
+  flex:1; min-width:0; display:flex; align-items:center; justify-content:center; gap:5px;
+  padding:6px 8px; border:1px solid var(--line); border-radius:8px;
+  background:var(--panel); color:var(--muted); cursor:pointer; font-size:11.5px; font-weight:600;
+}
+.notif-tab[aria-selected="true"]{background:var(--ink); color:var(--panel); border-color:var(--ink)}
+.notif-tab .tab-badge{
+  min-width:16px; height:16px; padding:0 4px; border-radius:8px;
+  background:var(--warn); color:#fff; font-size:9px; line-height:16px; text-align:center;
+}
+.notif-pane{display:none}
+.notif-pane.active{display:block}
+.login-feeditem{cursor:default}
+.login-feeditem .tx b{font-size:12.5px}
+.login-feeditem .tx span{font-size:11.5px}
+
+/* ─────────── reschedule dialog ─────────── */
+#rescheduleDialog{width:min(430px,calc(100vw - 28px))}
+#rescheduleDialog .rs-datebox{
+  border:1px solid var(--line); border-radius:10px; padding:10px; background:var(--panel-2);
+}
+#rescheduleDialog .rs-datebox label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+#rescheduleDialog .rs-datebox input{
+  width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px;
+  background:var(--panel); color:var(--ink);
+}
+#rescheduleDialog .rs-copy-note{
+  margin-top:9px; padding:9px 10px; border:1px dashed var(--line); border-radius:9px;
+  background:var(--panel-2); color:var(--muted); font-size:11.5px; line-height:1.5;
+}
+
 /* ─────────── login dialog header / company kop ─────────── */
+/* ─────────── member account stays separate from notification ─────────── */
+.member-account{
+  display:flex;align-items:center;gap:8px;
+  padding-left:8px;
+  border-left:1px solid var(--line-soft);
+  flex:none;
+}
+.member-account .member-label{
+  font-size:10px;color:var(--muted);line-height:1.05;
+}
+.member-account .member-main{
+  display:flex;align-items:center;gap:7px;
+}
+@media(max-width:560px){
+  .member-account{padding-left:5px}
+}
+
+/* Batch Paste Excel: area/company are entered once; Mold ID + Mold Name are pasted. */
+.batch-paste-meta{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  padding:12px 12px 0;
+}
+.batch-paste-meta .field{min-width:0}
+.batch-paste-meta .field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px}
+.batch-paste-meta .field input{
+  width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;
+  background:var(--panel-2);color:var(--ink);
+}
+.batch-paste-rule{
+  margin-top:7px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;
+  background:var(--panel-2);color:var(--muted);font-size:11.5px;line-height:1.5;
+}
+@media(max-width:700px){.batch-paste-meta{grid-template-columns:1fr}}
+
 #nameDialog .login-kop{
   display:flex; align-items:center; gap:12px;
   padding:12px 16px 10px;
@@ -1670,7 +1755,7 @@ body.capturing .sheet{box-shadow:none}
 <div id="guestLock" hidden>
   <div class="lockbox">
     <h3>Akses terkunci</h3>
-    <p>Silakan login untuk melihat dan menggunakan JSMOLD.</p>
+    <p>Silakan login sebagai member untuk melihat dan menggunakan JSMOLD.</p>
     <button class="btn solid lockbtn" id="guestLoginBtn" type="button">Login</button>
   </div>
 </div>
@@ -1685,11 +1770,19 @@ body.capturing .sheet{box-shadow:none}
   </div>
   <div class="spacer"></div>
   <div class="savepill" id="savepill" data-state="idle"><i class="dot"></i><span id="savetext">Siap</span></div>
-  <button class="iconbtn" id="bellBtn" aria-label="Pemberitahuan">
+  <button class="iconbtn" id="bellBtn" aria-label="Pemberitahuan" title="Pemberitahuan">
     <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
     <span class="badge" id="bellBadge" hidden>0</span>
   </button>
-  <div class="me"><span class="avcircle" id="meAvatar"></span><span id="meName">…</span><button class="namebtn" id="changeName" type="button">Logout</button></div>
+  <div class="member-account" id="memberAccount">
+    <div class="member-main">
+      <span class="avcircle" id="meAvatar"></span>
+      <span>
+        <span class="me"><span id="meName">…</span></span>
+      </span>
+    </div>
+    <button class="namebtn" id="changeName" type="button">Login Member</button>
+  </div>
 </header>
 
 <div class="menu" id="bellMenu" role="dialog" aria-label="Pemberitahuan">
@@ -1697,7 +1790,16 @@ body.capturing .sheet{box-shadow:none}
     <h3>Pemberitahuan</h3>
     <button class="linkbtn" id="markRead" style="margin:0;padding:4px 9px;font-size:12px">Tandai dibaca</button>
   </header>
-  <div class="list" id="feedList"><div class="empty">Belum ada perubahan dari anggota lain.</div></div>
+  <div class="notif-tabs" role="tablist" aria-label="Jenis pemberitahuan">
+    <button class="notif-tab" id="notifTabList" type="button" role="tab" aria-selected="true">
+      Pembaruan List <span class="tab-badge" id="listTabBadge" hidden>0</span>
+    </button>
+    <button class="notif-tab" id="notifTabLogin" type="button" role="tab" aria-selected="false">
+      Aktivitas Login <span class="tab-badge" id="loginTabBadge" hidden>0</span>
+    </button>
+  </div>
+  <div class="list notif-pane active" id="feedList"><div class="empty">Belum ada pembaruan list dari anggota lain.</div></div>
+  <div class="list notif-pane" id="loginFeedList"><div class="empty">Belum ada aktivitas login.</div></div>
   <footer>
     <button class="btn" id="enableNotif" style="padding:6px 11px;font-size:12.5px">Izinkan notifikasi browser</button>
   </footer>
@@ -1935,7 +2037,7 @@ body.capturing .sheet{box-shadow:none}
 <dialog id="batchDialog" class="batch-dialog">
   <div class="dh">
     <h3>Batch Input Delivery / Pickup</h3>
-    <div class="batch-sub">Maksimal 10 item · isi beberapa Delivery / Pickup sekaligus, lalu simpan item yang valid ke lembar.</div>
+    <div class="batch-sub">Maksimal 10 item · paste Mold ID + Mold Name dari Excel, lalu simpan item yang valid ke lembar.</div>
   </div>
 
   <div class="batch-toolbar">
@@ -1946,45 +2048,41 @@ body.capturing .sheet{box-shadow:none}
         <button type="button" data-kind="pickup" aria-pressed="false">Pickup</button>
       </div>
     </div>
-    <div class="field">
-      <label>Metode input</label>
-      <div class="batch-seg" id="batchMethodSeg">
-        <button type="button" data-method="form" aria-pressed="true">Form berulang</button>
-        <button type="button" data-method="paste" aria-pressed="false">Paste Excel</button>
-      </div>
-    </div>
+
   </div>
 
   <div class="batch-body">
     <div class="batch-banner" id="batchStatusBanner">Batch siap digunakan.</div>
 
-    <div class="batch-panel" id="batchFormPanel">
-      <div class="batch-panel-head">
-        <h4>Daftar item</h4>
-        <span id="batchCountLabel">0 / 10 item</span>
-      </div>
-      <div class="batch-form-toolbar">
-        <button type="button" class="btn" id="batchAdd1">+ 1 baris</button>
-        <button type="button" class="btn" id="batchAdd5">+ 5 baris</button>
-        <button type="button" class="btn" id="batchClearRows">Kosongkan item</button>
-      </div>
-      <div id="batchFormList" class="batch-form-list"></div>
-    </div>
-
-    <div class="batch-panel" id="batchPastePanel" hidden>
+    <div class="batch-panel" id="batchPastePanel">
       <div class="batch-panel-head">
         <h4>Paste dari Excel</h4>
-        <span>Header atau urutan kolom didukung</span>
+        <span>Mold ID + Mold Name</span>
       </div>
       <div class="batch-paste-box">
         <div class="batch-paste-help">
-          Format header yang dikenali: <b>Mold ID</b>, <b>Mold Name</b>, <b>Area</b>, <b>Company Name</b>.<br>
-          Tanpa header, urutan yang digunakan: <b>Mold ID → Mold Name → Area → Company Name</b>.
+          Isi <b>Area</b> dan <b>Company Name</b> satu kali. Nilai tersebut akan tampil otomatis pada seluruh baris di preview sebagai informasi batch, tetapi saat disimpan ke lembar JSMOLD hanya <b>baris pertama</b> yang akan diisi Area dan Company Name.
         </div>
-        <textarea id="batchPasteInput" class="batch-paste-input" placeholder="Paste 1–10 baris dari Excel di sini…"></textarea>
+        <div class="batch-paste-meta">
+          <div class="field">
+            <label for="batchPasteArea">Area</label>
+            <input id="batchPasteArea" autocomplete="off" placeholder="Contoh: JABABEKA">
+          </div>
+          <div class="field">
+            <label for="batchPasteCompany">Company Name</label>
+            <input id="batchPasteCompany" autocomplete="off" placeholder="Contoh: PT. SMI">
+          </div>
+        </div>
+        <div class="batch-paste-rule">
+          Paste <b>2 kolom</b> dari Excel: <b>Mold ID</b> → <b>Mold Name</b>. Header juga boleh ikut dipaste.
+        </div>
+        <textarea id="batchPasteInput" class="batch-paste-input" placeholder="Contoh:
+JS-26663	GARNISH-RAD/GRL UPR NO.2/NO.3
+JS-26692	GARNISH-RAD/GRL UPR (STD)
+JS-26693	GARNISH-RAD/GRL UPR (OPT)…"></textarea>
         <div class="batch-form-toolbar" style="padding:10px 0 0;border:0;background:transparent">
           <button type="button" class="btn solid" id="batchParsePaste">Tambahkan hasil paste</button>
-          <button type="button" class="btn" id="batchClearPaste">Bersihkan</button>
+          <button type="button" class="btn" id="batchClearPaste">Bersihkan paste</button>
         </div>
       </div>
     </div>
@@ -1992,45 +2090,15 @@ body.capturing .sheet{box-shadow:none}
     <div class="batch-panel" id="batchPreviewPanel">
       <div class="batch-panel-head">
         <h4>Preview tabel</h4>
+        <span id="batchCountLabel">0 / 10 item</span>
         <span id="batchPreviewSummary">0 valid · 0 perlu diperbaiki</span>
       </div>
       <div class="batch-table-wrap" id="batchPreviewWrap"></div>
-    </div>
-
-    <div class="batch-panel" id="batchEditPanel">
-      <div class="batch-panel-head">
-        <h4 id="batchEditTitle">Edit item</h4>
-        <span id="batchEditStatus">Pilih satu baris</span>
-      </div>
-      <div class="batch-edit">
-        <p class="batch-edit-hint" id="batchEditHint">Pilih baris pada preview, lalu edit melalui form ini.</p>
-        <div class="batch-edit-grid">
-          <div class="field">
-            <label for="batchEditArea">Area</label>
-            <input id="batchEditArea" autocomplete="off">
-            <div class="batch-copy-row"><button type="button" class="btn" id="batchCopyArea">Salin Area sebelumnya</button></div>
-          </div>
-          <div class="field">
-            <label for="batchEditCompany">Company Name</label>
-            <input id="batchEditCompany" autocomplete="off">
-            <div class="batch-copy-row"><button type="button" class="btn" id="batchCopyCompany">Salin Company sebelumnya</button></div>
-          </div>
-          <div class="field">
-            <label for="batchEditMoldId">Mold ID</label>
-            <input id="batchEditMoldId" autocomplete="off" list="batchMoldIds">
-            <datalist id="batchMoldIds"></datalist>
-            <div class="batch-field-hint">Ketik Mold ID langsung. Jika ditemukan di master, Mold Name akan terisi otomatis.</div>
-          </div>
-          <div class="field">
-            <label for="batchEditMoldName">Mold Name (opsional)</label>
-            <input id="batchEditMoldName" autocomplete="off">
-          </div>
-        </div>
-      </div>
+      <div class="batch-preview-note" id="batchPreviewNote">Area &amp; Company Name diisi satu kali. Keduanya tampil pada seluruh baris preview; saat disimpan ke lembar hanya baris pertama yang diisi. Mold ID / Mold Name dapat diedit langsung di preview.</div>
     </div>
 
     <div id="batchAfterSave" class="batch-after-save" hidden>
-      <b id="batchAfterSaveTitle">Batch berhasil diproses</b>
+      <b id="batchAfterSaveTitle">Batch berhasil disimpan</b>
       <span id="batchAfterSaveSub">Pilih apakah ingin tetap di Batch Input atau kembali ke form utama.</span>
       <div class="batch-form-toolbar" style="padding:10px 0 0;border:0;background:transparent">
         <button type="button" class="btn" id="batchStayBtn">Tetap di Batch Input</button>
@@ -2045,7 +2113,7 @@ body.capturing .sheet{box-shadow:none}
     </div>
     <div class="right">
       <button type="button" class="btn" id="batchCloseBtn">Tutup</button>
-      <button type="button" class="btn solid" id="batchSaveBtn">Simpan Batch Valid</button>
+      <button type="button" class="btn solid" id="batchSaveBtn">Simpan Batch</button>
     </div>
   </div>
 </dialog>
@@ -2058,6 +2126,24 @@ body.capturing .sheet{box-shadow:none}
   <div class="df">
     <button type="button" class="btn" id="batchManualCancel">Batal</button>
     <button type="button" class="btn solid" id="batchManualAccept">Izinkan manual</button>
+  </div>
+</dialog>
+
+<dialog id="rescheduleDialog">
+  <div class="dh">
+    <h3>Jadwal Ulang</h3>
+    <p id="rescheduleSub">Pilih tanggal baru untuk item ini.</p>
+  </div>
+  <div class="db">
+    <div class="rs-datebox">
+      <label for="rescheduleDate">Tanggal baru</label>
+      <input type="date" id="rescheduleDate">
+    </div>
+    <div class="rs-copy-note" id="rescheduleCopyNote">Item akan disalin otomatis ke form pada tanggal yang dipilih. Status pada tanggal baru kembali menjadi Rencana.</div>
+  </div>
+  <div class="df">
+    <button class="btn" id="rescheduleCancel" type="button">Batal</button>
+    <button class="btn solid" id="rescheduleApply" type="button">Jadwalkan Ulang</button>
   </div>
 </dialog>
 
@@ -2116,13 +2202,13 @@ body.capturing .sheet{box-shadow:none}
         <div class="login-kop-company">PT. JUNGWOO SHINHWA MOLD</div>
       </div>
     </div>
-    <div class="dh"><h3>Verifikasi member</h3><p>Masukkan nama lengkap sesuai daftar member engineering.</p></div>
+    <div class="dh"><h3>Login Member</h3><p>Pilih akun member yang terdaftar lalu masukkan password.</p></div>
     <div class="db">
-      <div class="field"><label for="f_myname">Nama / user</label><input id="f_myname" autocomplete="username" placeholder="mis. Eka"></div>
+      <div class="field"><label for="f_myname">User Member</label><input id="f_myname" autocomplete="username" placeholder="mis. Eka"></div>
       <div class="field"><label for="f_mypass">Password</label><input id="f_mypass" type="password" autocomplete="current-password" placeholder="Masukkan password"></div>
-      <div class="batch-field-hint" id="loginHint">Masukkan user dan password yang terdaftar.</div>
+      <div class="batch-field-hint" id="loginHint">Login member dikelola terpisah dari notifikasi perubahan di ikon lonceng.</div>
     </div>
-    <div class="df"><button class="btn solid" value="save" type="submit">Mulai</button></div>
+    <div class="df"><button class="btn solid" value="save" type="submit">Login Member</button></div>
   </form>
 </dialog>
 
@@ -2246,12 +2332,13 @@ var state={
   canWrite:false,
   db:null,
   feed:[], lastSeen:+lsGet("jsmold:lastSeen",0)||0,
+  loginFeed:[], lastLoginSeen:+lsGet("jsmold:lastLoginSeen",0)||0,
   mobile:window.matchMedia("(max-width: 900px)").matches,
   dirty:false, saving:false, pending:false, pendingRemote:null, createdRowIds:{}, sheetExists:false,
   dashboardDocs:{}, dashboardReady:false, dashboardUnsub:null, dashboardFetchToken:0,
   batch:{
-    open:false, loaded:false, kind:"delivery", method:"form", rows:[], selected:-1,
-    dirty:false, master:[], masterLoaded:false
+    open:false, loaded:false, kind:"delivery", method:"paste", rows:[], selected:-1,
+    dirty:false, master:[], masterLoaded:false, pasteArea:"", pasteCompany:""
   }
 };
 
@@ -2785,6 +2872,146 @@ function renderSheet(){
   updatePrintButton();
 }
 
+/* ───────────────────── reschedule workflow ───────────────────── */
+var rescheduleDialog=document.getElementById("rescheduleDialog");
+var rescheduleCtx=null;
+function rescheduleDefaultDate(){
+  return key(addDays(parseKey(state.sel),1));
+}
+function copyRescheduleToDate(kind, sourceRow, targetDate){
+  if(!state.db) return Promise.reject(new Error("Database belum tersambung"));
+  var owner=ownerShort(state.me.name);
+  if(!owner) return Promise.reject(new Error("Member belum terverifikasi"));
+  var ref=state.db.doc("sheets/"+targetDate);
+  return state.db.runTransaction(function(tx){
+    return tx.get(ref).then(function(snap){
+      var raw=snap.exists?snap.data():null;
+      var target=normalize(raw,targetDate);
+      var existingRows=target[kind]||[];
+      var sourceId=sourceRow._id||"";
+      var duplicate=existingRows.some(function(r){
+        return rowOwner(r)===owner && r._rescheduledFromId===sourceId;
+      });
+      if(duplicate) return {duplicate:true};
+
+      var seq=nextOwnerSequence(existingRows,owner);
+      var nr=newRow(owner,seq);
+      nr.area=sourceRow.area||"";
+      nr.company=sourceRow.company||"";
+      nr.pic=sourceRow.pic||"";
+      nr.moldId=sourceRow.moldId||"";
+      nr.moldName=sourceRow.moldName||"";
+      nr.note=sourceRow.note||"";
+      nr.reasonType="";
+      nr.status="";
+      nr._rescheduledFromId=sourceId;
+      nr._rescheduledFromDate=state.sel;
+      nr._rescheduledTo=targetDate;
+      nr._rescheduledBy=owner;
+
+      var buckets=ownerBuckets(target,kind);
+      if(!buckets[owner]) buckets[owner]=[];
+      buckets[owner].push(nr);
+
+      var contributors=canonicalContributorList((target.contributors||[]).concat([owner]));
+      var confirmed=canonicalContributorList((target.confirmed||[]).concat([owner]));
+      var payload={
+        date:targetDate,
+        updatedAt:new Date().toISOString(),
+        updatedByName:owner,
+        updatedByUid:state.me.id||"anon",
+        contributors:contributors,
+        confirmed:confirmed,
+        nihil:false
+      };
+      if(!snap.exists){
+        payload[kind+"ByOwner"]={};
+        payload[kind+"ByOwner"][owner]=buckets[owner];
+        tx.set(ref,payload,{merge:true});
+      }else{
+        payload[kind+"ByOwner."+owner]=buckets[owner];
+        tx.update(ref,payload);
+      }
+      return {duplicate:false, row:nr};
+    });
+  });
+}
+function waitCurrentSave(timeoutMs){
+  timeoutMs=timeoutMs||12000;
+  var started=Date.now();
+  return new Promise(function(resolve){
+    (function poll(){
+      if(!state.dirty && !state.saving){resolve(true);return;}
+      if(Date.now()-started>timeoutMs){resolve(false);return;}
+      setTimeout(poll,150);
+    })();
+  });
+}
+function openRescheduleDialog(kind,i){
+  if(!state.canWrite){toast("Hanya bisa dilihat","Akun ini tidak punya akses ubah.");return;}
+  var rows=state.sheet[kind]||[];
+  var r=rows[i];
+  if(!r) return;
+  rescheduleCtx={kind:kind,i:i,sourceDate:state.sel,oldStatus:r.status||""};
+  var target=rescheduleDefaultDate();
+  var inp=document.getElementById("rescheduleDate");
+  inp.value=target;
+  inp.min=key(addDays(parseKey(state.sel),1));
+  document.getElementById("rescheduleSub").textContent=(kind==="delivery"?"Delivery":"Pick up")+" · "+(r.moldId||"Mold ID")+" · "+(r.moldName||"Mold Name")+" dari "+longDate(state.sel);
+  document.getElementById("rescheduleCopyNote").textContent="Item akan disalin otomatis ke form tanggal " + longDate(target) + ". Area, Company Name, PIC, Mold ID, Mold Name, dan Keterangan ikut disalin; status pada tanggal baru kembali menjadi Rencana.";
+  if(!rescheduleDialog.open) rescheduleDialog.showModal();
+  setTimeout(function(){inp.focus();},40);
+}
+document.getElementById("rescheduleDate").addEventListener("input",function(){
+  var target=this.value;
+  if(target){
+    document.getElementById("rescheduleCopyNote").textContent="Item akan disalin otomatis ke form tanggal " + longDate(target) + ". Area, Company Name, PIC, Mold ID, Mold Name, dan Keterangan ikut disalin; status pada tanggal baru kembali menjadi Rencana.";
+  }
+});
+document.getElementById("rescheduleCancel").onclick=function(){
+  rescheduleCtx=null;
+  rescheduleDialog.close();
+};
+document.getElementById("rescheduleApply").onclick=async function(){
+  var c=rescheduleCtx;
+  if(!c) return;
+  var target=document.getElementById("rescheduleDate").value;
+  var minDate=key(addDays(parseKey(c.sourceDate),1));
+  if(!target || target<minDate){toast("Tanggal tidak valid","Pilih tanggal setelah "+longDate(c.sourceDate)+".");return;}
+  var btn=document.getElementById("rescheduleApply");
+  if(btn.disabled)return;
+  btn.disabled=true;
+  var rows=state.sheet[c.kind]||[];
+  var r=rows[c.i];
+  if(!r){btn.disabled=false;rescheduleCtx=null;rescheduleDialog.close();return;}
+  try{
+    var result=await copyRescheduleToDate(c.kind,r,target);
+    if(result && result.duplicate){
+      toast("Sudah dijadwalkan ulang","Item ini sudah pernah disalin ke "+longDate(target)+".");
+      rescheduleDialog.close();
+      rescheduleCtx=null;
+    }else{
+      r.status="ulang";
+      r._rescheduledTo=target;
+      r._rescheduledAt=Date.now();
+      markDirty();
+      renderSheet();
+      doSave();
+      var sourceSaved=await waitCurrentSave();
+      rescheduleDialog.close();
+      rescheduleCtx=null;
+      toast("Jadwal ulang tersimpan","Item otomatis disalin ke "+longDate(target)+".");
+      selectDate(target);
+      if(!sourceSaved) toast("Status sumber masih disimpan","Jadwal ulang sudah dibuat pada tanggal tujuan.");
+    }
+  }catch(err){
+    console.error(err);
+    toast("Gagal jadwal ulang","Data tidak berhasil disalin. Periksa koneksi lalu coba lagi.");
+  }finally{
+    btn.disabled=false;
+  }
+};
+
 /* ───────────────────── sheet interactions ───────────────────── */
 var sheetEl=document.getElementById("sheet");
 
@@ -2831,6 +3058,10 @@ sheetEl.addEventListener("click",function(e){
     if(!state.canWrite) return;
     var rows=state.sheet[chk.dataset.kind], r=rows[+chk.dataset.i];
     if(!r) return;
+    if(chk.dataset.chk==="ulang" && r.status!=="ulang"){
+      openRescheduleDialog(chk.dataset.kind,+chk.dataset.i);
+      return;
+    }
     r.status = (r.status===chk.dataset.chk) ? "" : chk.dataset.chk;
     // Jangan menghapus r.note saat status KIRIM/JADWAL ULANG diubah.
     // reasonType juga dipertahankan agar data lama dari versi sebelumnya tidak hilang.
@@ -3093,11 +3324,15 @@ document.getElementById("shareImgBtn").onclick=async function(){
   function batchNewRow(){
     return batchEnrichRow({_id:randomRowId(),_batchItemId:randomRowId(),area:"",company:"",moldId:"",moldName:"",manualConfirmed:false});
   }
-  function batchStatusOf(r){
+  function batchStatusOf(r,index){
     var errors=[];
+    var rowIndex=(index==null)?state.batch.rows.indexOf(r):Number(index);
     if(!String(r&&r.moldId||"").trim()) errors.push("Mold ID wajib");
-    if(!String(r&&r.area||"").trim()) errors.push("Area wajib");
-    if(!String(r&&r.company||"").trim()) errors.push("Company Name wajib");
+    // Paste Excel uses Area + Company Name once: only row 1 must contain them.
+    if(rowIndex===0){
+      if(!String(r&&r.area||"").trim()) errors.push("Area wajib di baris pertama");
+      if(!String(r&&r.company||"").trim()) errors.push("Company Name wajib di baris pertama");
+    }
     if(String(r&&r.moldId||"").trim() && !batchMasterFind(r.moldId) && !r.manualConfirmed){
       errors.push("Mold ID tidak ditemukan di master; perlu konfirmasi manual");
     }
@@ -3124,10 +3359,10 @@ document.getElementById("shareImgBtn").onclick=async function(){
   function batchApplyReadOnly(){
     var enabled=batchEditEnabled();
     batchDialog.classList.toggle("readonly",!enabled);
-    ["batchAdd1","batchAdd5","batchClearRows","batchParsePaste","batchClearPaste","batchDeleteDraft","batchSaveBtn","batchEditArea","batchEditCompany","batchEditMoldId","batchEditMoldName","batchCopyArea","batchCopyCompany"].forEach(function(id){
+    ["batchParsePaste","batchClearPaste","batchDeleteDraft","batchSaveBtn","batchPasteArea","batchPasteCompany"].forEach(function(id){
       var e=document.getElementById(id); if(e) e.disabled=!enabled;
     });
-    document.querySelectorAll("#batchKindSeg button,#batchMethodSeg button").forEach(function(b){b.disabled=!enabled;});
+    document.querySelectorAll("#batchKindSeg button").forEach(function(b){b.disabled=!enabled;});
     if(!state.db){
       batchSetBanner("Belum tersambung ke JSMOLD. Tunggu koneksi untuk menggunakan Batch Input.","warn");
     }else if(navigator.onLine===false){
@@ -3139,32 +3374,14 @@ document.getElementById("shareImgBtn").onclick=async function(){
     }
   }
   function batchRenderSegments(){
-    document.querySelectorAll("#batchKindSeg button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.kind===state.batch.kind));});
-    document.querySelectorAll("#batchMethodSeg button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.method===state.batch.method));});
-    document.getElementById("batchFormPanel").hidden=state.batch.method!=="form";
-    document.getElementById("batchPastePanel").hidden=state.batch.method!=="paste";
-  }
-  function batchRenderFormList(){
-    var host=document.getElementById("batchFormList"); host.innerHTML="";
-    if(!state.batch.rows.length){ host.innerHTML='<div class="batch-empty">Belum ada item. Gunakan +1 atau +5 baris, atau paste dari Excel.</div>'; return; }
-    state.batch.rows.forEach(function(r,i){
-      var es=batchStatusOf(r);
-      var item=el("div","batch-form-item"+(i===state.batch.selected?" sel":""));
-      item.dataset.i=i;
-      var no=el("div","batch-form-no",String(i+1)); item.appendChild(no);
-      var main=el("div","batch-form-main");
-      var title=r.moldId||r.moldName||"Item belum diisi";
-      main.appendChild(el("div","batch-form-title",title));
-      var meta=[r.area||"Area—",r.company||"Company—",r.moldName||"Mold Name—"].join(" · ");
-      main.appendChild(el("div","batch-form-meta",meta));
-      item.appendChild(main);
-      var actions=el("div","batch-form-actions");
-      var st=el("span","batch-status "+(es.length?"error":"valid"),es.length?(es.length+" error"):"Valid");
-      actions.appendChild(st);
-      if(r._pendingSheetSave) actions.appendChild(el("span","batch-status pending","Menunggu simpan lembar"));
-      item.appendChild(actions);
-      host.appendChild(item);
+    document.querySelectorAll("#batchKindSeg button").forEach(function(b){
+      b.setAttribute("aria-pressed",String(b.dataset.kind===state.batch.kind));
     });
+    state.batch.method="paste";
+    var note=document.getElementById("batchPreviewNote");
+    if(note){
+      note.textContent="Area & Company Name diisi satu kali. Keduanya tampil pada seluruh baris preview, tetapi saat disimpan ke lembar hanya baris pertama yang diisi. Klik Mold ID atau Mold Name pada preview untuk mengedit langsung jika diperlukan.";
+    }
   }
   function batchRenderPreview(){
     var wrap=document.getElementById("batchPreviewWrap");
@@ -3172,114 +3389,44 @@ document.getElementById("shareImgBtn").onclick=async function(){
     document.getElementById("batchCountLabel").textContent=sum.total+" / 10 item";
     document.getElementById("batchPreviewSummary").textContent=sum.valid+" valid · "+sum.error+" perlu diperbaiki"+(sum.pending?" · "+sum.pending+" menunggu simpan lembar":"");
     if(!state.batch.rows.length){wrap.innerHTML='<div class="batch-empty">Preview kosong.</div>';return;}
+
+    var isPaste=state.batch.method==="paste";
+    var first=state.batch.rows[0]||{};
+    var inheritedArea=String(first.area||"").trim();
+    var inheritedCompany=String(first.company||"").trim();
+
     var html='<table class="batch-table"><thead><tr><th>No.</th><th>Mold ID</th><th>Mold Name</th><th>Area</th><th>Company Name</th><th>Status</th><th>Alasan</th></tr></thead><tbody>';
     state.batch.rows.forEach(function(r,i){
       var es=batchStatusOf(r), cls=(i===state.batch.selected?" sel":"")+(es.length?" err":"");
+      var displayArea=(i===0 || !isPaste) ? (r.area||"—") : (r.area||inheritedArea||"—");
+      var displayCompany=(i===0 || !isPaste) ? (r.company||"—") : (r.company||inheritedCompany||"—");
+
+      var moldIdCell=isPaste
+        ? '<input class="batch-inline-edit" type="text" data-field="moldId" data-i="'+i+'" value="'+esc(r.moldId||"")+'" aria-label="Mold ID baris '+(i+1)+'">'
+        : '<b>'+esc(r.moldId||"—")+'</b>';
+      var moldNameCell=isPaste
+        ? '<input class="batch-inline-edit" type="text" data-field="moldName" data-i="'+i+'" value="'+esc(r.moldName||"")+'" aria-label="Mold Name baris '+(i+1)+'">'
+        : esc(r.moldName||"—");
+
       html+='<tr class="'+cls+'" data-i="'+i+'">'
         +'<td>'+(i+1)+'</td>'
-        +'<td><b>'+esc(r.moldId||"—")+'</b></td>'
-        +'<td>'+esc(r.moldName||"—")+'</td>'
-        +'<td>'+esc(r.area||"—")+'</td>'
-        +'<td>'+esc(r.company||"—")+'</td>'
-        +'<td>'+(es.length?'<span class="batch-status error">Error</span>':'<span class="batch-status valid">Valid</span>')+'</td>'
-        +'<td class="'+(es.length?"error-cell":"")+'">'+esc(es.join(" · ")||"—")+'</td>'
+        +'<td>'+moldIdCell+'</td>'
+        +'<td>'+moldNameCell+'</td>'
+        +'<td>'+esc(displayArea)+'</td>'
+        +'<td>'+esc(displayCompany)+'</td>'
+        +'<td class="batch-status-cell">'+(es.length?'<span class="batch-status error">Error</span>':'<span class="batch-status valid">Valid</span>')+'</td>'
+        +'<td class="batch-reason-cell '+(es.length?"error-cell":"")+'">'+esc(es.join(" · ")||"—")+'</td>'
         +'</tr>';
     });
     html+='</tbody></table>';
     wrap.innerHTML=html;
   }
-  function batchRenderEdit(){
-    var r=state.batch.rows[state.batch.selected];
-    var disabled=!batchEditEnabled();
-    var ids=["batchEditArea","batchEditCompany","batchEditMoldId","batchEditMoldName","batchCopyArea","batchCopyCompany"];
-    if(!r){
-      var pf=state.batch.pendingForm||{area:"",company:"",moldId:"",moldName:""};
-      document.getElementById("batchEditTitle").textContent="Input awal";
-      document.getElementById("batchEditStatus").textContent="Belum ada baris";
-      document.getElementById("batchEditHint").textContent="Isi data di sini terlebih dahulu. Saat +1 baris ditekan, data otomatis dipindahkan ke baris pertama.";
-      document.getElementById("batchEditArea").value=pf.area||"";
-      document.getElementById("batchEditCompany").value=pf.company||"";
-      document.getElementById("batchEditMoldId").value=pf.moldId||"";
-      document.getElementById("batchEditMoldName").value=pf.moldName||"";
-      ["batchCopyArea","batchCopyCompany"].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=true;});
-      ids.slice(0,4).forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=disabled;});
-      return;
-    }
-    document.getElementById("batchEditTitle").textContent="Edit item "+(state.batch.selected+1);
-    var es=batchStatusOf(r);
-    document.getElementById("batchEditStatus").textContent=es.length?es.join(" · "):"Valid";
-    document.getElementById("batchEditHint").textContent=es.length?"Perbaiki field yang ditandai pada alasan validasi di preview.":"Item ini siap masuk penyimpanan batch.";
-    document.getElementById("batchEditArea").value=r.area||"";
-    document.getElementById("batchEditCompany").value=r.company||"";
-    document.getElementById("batchEditMoldId").value=r.moldId||"";
-    document.getElementById("batchEditMoldName").value=r.moldName||"";
-    ids.forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=disabled;});
-  }
-  function batchRenderAll(){ batchRenderSegments(); batchRenderFormList(); batchRenderPreview(); batchRenderEdit(); batchApplyReadOnly(); }
+
+  function batchRenderAll(){ batchRenderSegments(); batchRenderPreview(); batchApplyReadOnly(); }
   function batchSetSelected(i){
     i=Math.max(0,Math.min((state.batch.rows.length||1)-1,Number(i)||0));
     if(!state.batch.rows.length){state.batch.selected=-1;}else{state.batch.selected=i;}
     batchRenderAll();
-  }
-  function batchAddRows(count){
-    if(!batchEditEnabled()) return;
-    count=Math.max(1,Math.min(10,count||1));
-    var before=state.batch.rows.length;
-    var room=10-before;
-    var add=Math.min(count,room);
-    for(var i=0;i<add;i++) state.batch.rows.push(batchNewRow());
-
-    // Jika user sudah mengisi form sebelum membuat baris, pindahkan isinya
-    // ke baris pertama yang baru dibuat tanpa kehilangan data.
-    if(before===0 && add>0){
-      var pf=state.batch.pendingForm||{};
-      var first=state.batch.rows[0];
-      first.area=pf.area||"";
-      first.company=pf.company||"";
-      first.moldId=pf.moldId||"";
-      first.moldName=pf.moldName||"";
-      batchEnrichRow(first);
-      state.batch.pendingForm={area:"",company:"",moldId:"",moldName:""};
-      state.batch.selected=0;
-    }else if(add){
-      state.batch.selected=before;
-    }
-
-    if(add<count) toast("Maksimal 10 item","Batch input hanya mendukung 1–10 item.");
-    if(add){batchMarkDirty();batchRenderAll();}
-  }
-  function batchCopyPrevious(field){
-    if(!batchEditEnabled()) return;
-    var i=state.batch.selected;
-    if(i<=0 || !state.batch.rows[i]) return;
-    var src=state.batch.rows[i-1];
-    state.batch.rows[i][field]=field==="company"?formatCompany(src[field]||""):String(src[field]||"").toUpperCase();
-    batchEnrichRow(state.batch.rows[i]);
-    batchMarkDirty(); batchRenderAll();
-  }
-  function batchEditField(field,value){
-    if(!batchEditEnabled()) return;
-    if(field==="company") value=formatCompany(String(value||"").toUpperCase());
-    else if(field==="moldId") value=formatMoldId(String(value||"").toUpperCase());
-    else value=String(value||"").toUpperCase();
-
-    var r=state.batch.rows[state.batch.selected];
-    if(!r){
-      state.batch.pendingForm[field]=value;
-      if(field==="moldId"){
-        var pm=batchMasterFind(value);
-        if(pm) state.batch.pendingForm.moldName=pm.moldName||state.batch.pendingForm.moldName;
-      }
-      batchMarkDirty();
-      batchRenderEdit();
-      return;
-    }
-
-    if(field==="moldId" && value!==r.moldId){ r.manualConfirmed=false; }
-    r[field]=value;
-    if(field==="moldId") batchEnrichRow(r);
-    batchMarkDirty();
-    batchRenderFormList(); batchRenderPreview(); batchRenderEdit();
   }
   function batchSetKind(kind){
     if(kind!=="delivery" && kind!=="pickup") return;
@@ -3298,10 +3445,8 @@ document.getElementById("shareImgBtn").onclick=async function(){
       var n=String(v||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
       if(/mold\s*id|id\s*mold|kode\s*mold/.test(n)) map.moldId=i;
       else if(/mold\s*name|nama\s*mold/.test(n)) map.moldName=i;
-      else if(/^area$|area\s*tujuan|tujuan/.test(n)) map.area=i;
-      else if(/company|perusahaan|nama\s*perusahaan/.test(n)) map.company=i;
     });
-    return Object.keys(map).length>=2?map:null;
+    return (map.moldId!=null && map.moldName!=null)?map:null;
   }
   function splitPasteLine(line){
     if(line.indexOf("\t")>=0) return line.split("\t");
@@ -3316,34 +3461,51 @@ document.getElementById("shareImgBtn").onclick=async function(){
     var headerMap=detectPasteHeader(matrix[0]);
     var start=headerMap?1:0;
     var rows=[];
+
     for(var i=start;i<matrix.length;i++){
       var c=matrix[i];
       var r=batchNewRow();
-      if(headerMap){
-        r.moldId=c[headerMap.moldId]||""; r.moldName=c[headerMap.moldName]||""; r.area=c[headerMap.area]||""; r.company=c[headerMap.company]||"";
-      }else{
-        r.moldId=c[0]||""; r.moldName=c[1]||""; r.area=c[2]||""; r.company=c[3]||"";
-      }
+      r.moldId=headerMap?(c[headerMap.moldId]||""):(c[0]||"");
+      r.moldName=headerMap?(c[headerMap.moldName]||""):(c[1]||"");
       batchEnrichRow(r);
       rows.push(r);
     }
+
     if(rows.length>10) return {rows:rows.slice(0,10),error:"Paste berisi "+rows.length+" item; hanya 10 item pertama yang dimuat."};
     return {rows:rows,error:""};
   }
+  function batchSyncPasteMeta(){
+    var area=String(document.getElementById("batchPasteArea").value||"").trim().toUpperCase();
+    var company=formatCompany(String(document.getElementById("batchPasteCompany").value||"").trim().toUpperCase());
+    state.batch.pasteArea=area;
+    state.batch.pasteCompany=company;
+    state.batch.pendingForm=state.batch.pendingForm||{};
+    state.batch.pendingForm.area=area;
+    state.batch.pendingForm.company=company;
+  }
   function batchAddPaste(){
     if(!batchEditEnabled()) return;
+    batchSyncPasteMeta();
     var parsed=parsePaste(document.getElementById("batchPasteInput").value);
     if(parsed.error && !parsed.rows.length){toast("Paste tidak valid",parsed.error);return;}
-    if(!parsed.rows.length){toast("Tidak ada item","Tidak ada baris data yang ditemukan.");return;}
+    if(!parsed.rows.length){toast("Tidak ada item","Tidak ada baris Mold ID / Mold Name yang ditemukan.");return;}
     var room=10-state.batch.rows.length;
     if(parsed.rows.length>room) parsed.rows=parsed.rows.slice(0,room);
     if(!parsed.rows.length){toast("Batch sudah penuh","Maksimal 10 item.");return;}
+
+    // Area + Company Name are intentionally written to the FIRST row of the batch only.
+    if(state.batch.rows.length===0){
+      parsed.rows[0].area=state.batch.pasteArea||"";
+      parsed.rows[0].company=state.batch.pasteCompany||"";
+      batchEnrichRow(parsed.rows[0]);
+    }
     state.batch.rows=state.batch.rows.concat(parsed.rows);
     state.batch.selected=state.batch.rows.length-parsed.rows.length;
     batchMarkDirty(); batchRenderAll();
     document.getElementById("batchPasteInput").value="";
-    if(parsed.error) toast("Paste dipotong",parsed.error); else toast("Data dipreview",parsed.rows.length+" item ditambahkan ke batch.");
+    if(parsed.error) toast("Paste dipotong",parsed.error); else toast("Data dipreview",parsed.rows.length+" item ditambahkan. Area & Company Name hanya di baris pertama.");
   }
+
   function batchPopulateMaster(){
     // Master data tetap dipakai di belakang layar untuk validasi dan
     // autofill Mold Name ketika Mold ID yang diketik ditemukan.
@@ -3370,7 +3532,7 @@ document.getElementById("shareImgBtn").onclick=async function(){
       console.warn("Master data tidak dapat dimuat",err);
     }
     batchPopulateMaster();
-    batchRenderEdit();
+    batchRenderPreview();
   }
   function batchAskManual(rowIndex){
     return new Promise(function(resolve){
@@ -3429,31 +3591,80 @@ document.getElementById("shareImgBtn").onclick=async function(){
     batchApplyReadOnly();
   }
   document.getElementById("batchKindSeg").addEventListener("click",function(e){var b=e.target.closest("button[data-kind]");if(b)batchSetKind(b.dataset.kind);});
-  document.getElementById("batchMethodSeg").addEventListener("click",function(e){var b=e.target.closest("button[data-method]");if(!b)return; state.batch.method=b.dataset.method; batchMarkDirty(); batchRenderAll();});
-  document.getElementById("batchAdd1").onclick=function(){batchAddRows(1)};
-  document.getElementById("batchAdd5").onclick=function(){batchAddRows(5)};
-  document.getElementById("batchClearRows").onclick=function(){
-    if(!batchEditEnabled() || !state.batch.rows.length)return;
-    if(!window.confirm("Kosongkan seluruh item batch ini?"))return;
-    state.batch.rows=[]; state.batch.selected=-1; batchMarkDirty(); batchRenderAll();
-  };
-  document.getElementById("batchFormList").addEventListener("click",function(e){var x=e.target.closest(".batch-form-item");if(x)batchSetSelected(+x.dataset.i);});
-  document.getElementById("batchPreviewWrap").addEventListener("click",function(e){var x=e.target.closest("tr[data-i]");if(x)batchSetSelected(+x.dataset.i);});
+  document.getElementById("batchPreviewWrap").addEventListener("click",function(e){
+    if(e.target.closest("input,select,textarea,button")) return;
+    var x=e.target.closest("tr[data-i]");
+    if(x)batchSetSelected(+x.dataset.i);
+  });
+  document.getElementById("batchPreviewWrap").addEventListener("change",function(e){
+    var input=e.target.closest("input.batch-inline-edit");
+    if(!input || !batchEditEnabled()) return;
+    var i=Number(input.dataset.i);
+    var field=input.dataset.field;
+    var r=state.batch.rows[i];
+    if(!r || (field!=="moldId" && field!=="moldName")) return;
+
+    var value=String(input.value||"").trim().toUpperCase();
+    if(field==="moldId"){
+      value=formatMoldId(value);
+      if(value!==r.moldId) r.manualConfirmed=false;
+      r.moldId=value;
+      batchEnrichRow(r);
+    }else{
+      r.moldName=value;
+    }
+
+    batchMarkDirty();
+
+    // Refresh only the current row's status/reason so the editor keeps focus/value.
+    var tr=input.closest("tr[data-i]");
+    if(tr){
+      var es=batchStatusOf(r);
+      var status=tr.querySelector(".batch-status-cell");
+      var reason=tr.querySelector(".batch-reason-cell");
+      if(status) status.innerHTML=es.length
+        ? '<span class="batch-status error">Error</span>'
+        : '<span class="batch-status valid">Valid</span>';
+      if(reason){
+        reason.textContent=es.join(" · ")||"—";
+        reason.classList.toggle("error-cell",!!es.length);
+      }
+      if(field==="moldId"){
+        var nameInput=tr.querySelector('input.batch-inline-edit[data-field="moldName"]');
+        if(nameInput) nameInput.value=r.moldName||"";
+        input.value=r.moldId||"";
+      }
+      tr.classList.toggle("err",!!es.length);
+    }
+
+    // Keep the selected row synchronized without a full re-render.
+    state.batch.selected=i;
+    document.querySelectorAll("#batchPreviewWrap tr[data-i]").forEach(function(row){
+      row.classList.toggle("sel",Number(row.dataset.i)===i);
+    });
+    document.getElementById("batchPreviewSummary").textContent=batchSummary().valid+" valid · "+batchSummary().error+" perlu diperbaiki";
+  });
   document.getElementById("batchPastePanel").addEventListener("click",function(e){
     if(e.target.id==="batchParsePaste")batchAddPaste();
     if(e.target.id==="batchClearPaste")document.getElementById("batchPasteInput").value="";
   });
-  document.getElementById("batchEditArea").addEventListener("input",function(){batchEditField("area",this.value);});
-  document.getElementById("batchEditCompany").addEventListener("input",function(){batchEditField("company",this.value);});
-  document.getElementById("batchEditMoldId").addEventListener("input",function(){batchEditField("moldId",this.value);});
-  document.getElementById("batchEditMoldName").addEventListener("input",function(){batchEditField("moldName",this.value);});
-  document.getElementById("batchEditMoldId").addEventListener("change",function(){
-    var r=state.batch.rows[state.batch.selected]; if(!r)return;
-    var m=batchMasterFind(r.moldId);
-    if(m){r.moldName=m.moldName||r.moldName;r.manualConfirmed=false;batchMarkDirty();batchRenderAll();}
+  document.getElementById("batchPasteArea").addEventListener("input",function(){
+    if(!batchEditEnabled()) return;
+    state.batch.pasteArea=String(this.value||"").trim().toUpperCase();
+    state.batch.pendingForm=state.batch.pendingForm||{};
+    state.batch.pendingForm.area=state.batch.pasteArea;
+    if(state.batch.rows.length){state.batch.rows[0].area=state.batch.pasteArea;batchEnrichRow(state.batch.rows[0]);}
+    batchMarkDirty(); batchRenderAll();
   });
-  document.getElementById("batchCopyArea").onclick=function(){batchCopyPrevious("area")};
-  document.getElementById("batchCopyCompany").onclick=function(){batchCopyPrevious("company")};
+  document.getElementById("batchPasteCompany").addEventListener("input",function(){
+    if(!batchEditEnabled()) return;
+    state.batch.pasteCompany=formatCompany(String(this.value||"").trim().toUpperCase());
+    state.batch.pendingForm=state.batch.pendingForm||{};
+    state.batch.pendingForm.company=state.batch.pasteCompany;
+    this.value=state.batch.pasteCompany;
+    if(state.batch.rows.length){state.batch.rows[0].company=state.batch.pasteCompany;batchEnrichRow(state.batch.rows[0]);}
+    batchMarkDirty(); batchRenderAll();
+  });
   document.getElementById("batchDeleteDraft").onclick=function(){
     if(!batchEditEnabled() || !state.batch.rows.length) return;
     if(!window.confirm("Hapus seluruh item dari batch saat ini?")) return;
@@ -3481,11 +3692,23 @@ document.getElementById("shareImgBtn").onclick=async function(){
     var added=0;
     validRows.forEach(function(br){
       var existing=batchFindSheetItem(br._batchItemId);
-      if(existing){existing.area=br.area;existing.company=br.company;existing.moldId=br.moldId;existing.moldName=br.moldName;added++;br._pendingSheetSave=true;return;}
+      if(existing){
+        var isFirstExisting=(state.batch.rows.indexOf(br)===0);
+        existing.area=isFirstExisting ? br.area : "";
+        existing.company=isFirstExisting ? br.company : "";
+        existing.moldId=br.moldId; existing.moldName=br.moldName;
+        added++; br._pendingSheetSave=true; return;
+      }
       var seq=nextOwnerSequence(state.sheet[state.batch.kind]||[],owner);
       var nr=newRow(owner,seq);
       nr._batchItemId=br._batchItemId;
-      nr.area=br.area; nr.company=br.company; nr.moldId=br.moldId; nr.moldName=br.moldName;
+      // Paste Excel represents one common Area + Company Name for the whole batch.
+      // Persist those two fields only on the first saved row; later rows remain blank
+      // so the main sheet matches the requested output layout.
+      var isFirstBatchRow=(state.batch.rows.indexOf(br)===0);
+      nr.area=isFirstBatchRow ? br.area : "";
+      nr.company=isFirstBatchRow ? br.company : "";
+      nr.moldId=br.moldId; nr.moldName=br.moldName;
       nr._storage="owner"; nr._owner=owner; nr._ownerOrder=ownerOrder(owner);
       state.sheet[state.batch.kind].push(nr);
       state.createdRowIds[nr._id]=true;
@@ -3509,8 +3732,8 @@ document.getElementById("shareImgBtn").onclick=async function(){
     if(!state.batch.rows.some(function(r){return r._pendingSheetSave;})){
       var remaining=batchSummary();
       state.batch.dirty=!!remaining.total;
-      document.getElementById("batchAfterSaveTitle").textContent=added+" item valid diproses";
-      document.getElementById("batchAfterSaveSub").textContent=remaining.error?"Item valid sudah masuk ke lembar. Item error tetap berada di batch untuk diperbaiki.":"Semua item valid sudah masuk ke lembar. Pilih tindakan berikutnya.";
+      document.getElementById("batchAfterSaveTitle").textContent=added+" item batch diproses";
+      document.getElementById("batchAfterSaveSub").textContent=remaining.error?"Item valid sudah masuk ke lembar. Item error tetap berada di batch untuk diperbaiki.":"Semua item batch sudah masuk ke lembar. Pilih tindakan berikutnya.";
       document.getElementById("batchAfterSave").hidden=false;
       batchRenderAll();
     }else{
@@ -3526,13 +3749,17 @@ document.getElementById("shareImgBtn").onclick=async function(){
       state.batch.dateKey=state.sel;
       state.batch.loaded=false;
       state.batch.kind="delivery";
-      state.batch.method="form";
+      state.batch.method="paste";
       state.batch.rows=[];
       state.batch.selected=-1;
-      state.batch.pendingForm={area:"",company:"",moldId:"",moldName:""};
+      state.batch.pendingForm={area:"",company:""};
+      state.batch.pasteArea="";
+      state.batch.pasteCompany="";
       state.batch.dirty=false;
       state.batch.masterLoaded=false;
       state.batch.master=[];
+      document.getElementById("batchPasteArea").value="";
+      document.getElementById("batchPasteCompany").value="";
     }
     if(!batchDialog.open) batchDialog.showModal();
     state.batch.open=true;
@@ -3608,14 +3835,19 @@ rd.addEventListener("close",function(){
   var c=rdCtx; rdCtx=null;
   var rows=state.sheet[c.kind], r=rows[c.i]; if(!r) return;
   if(rd.returnValue==="save"){
+    var oldStatus=r.status||"";
     r.area=g("f_area").toUpperCase(); r.company=formatCompany(g("f_company").toUpperCase()); r.pic=g("f_pic").toUpperCase();
-    r.moldId=formatMoldId(g("f_moldid").toUpperCase()); r.moldName=g("f_moldname").toUpperCase(); r.status=rdStatus;
+    r.moldId=formatMoldId(g("f_moldid").toUpperCase()); r.moldName=g("f_moldname").toUpperCase();
+    r.status=(rdStatus==="ulang" && oldStatus!=="ulang")?oldStatus:rdStatus;
     // Jangan pernah mengosongkan Keterangan saat status dipilih.
     // reasonType lama dipertahankan untuk kompatibilitas data versi sebelumnya.
     r.reasonType = r.reasonType || ((rdStatus==="ok"||rdStatus==="ulang") ? rdReason : "");
     r.note = g("f_note").toUpperCase();
     if(rowEmpty(r)) rows.splice(c.i,1);
     markDirty(); renderSheet();
+    if(rdStatus==="ulang" && oldStatus!=="ulang"){
+      setTimeout(function(){openRescheduleDialog(c.kind,c.i);},60);
+    }
   }else if(rd.returnValue==="delete"){
     rows.splice(c.i,1); markDirty(); renderSheet();
   }else if(c.isNew && rowEmpty(r)){
@@ -5504,6 +5736,7 @@ function renderTomorrow(){
 
 /* ───────────────────── date selection + live doc ───────────────────── */
 var unsubDoc=null;
+var unsubLoginActivity=null;
 function selectDate(k,fromRemote){
   if(state.batch && state.batch.open){ try{document.getElementById("batchDialog").close();}catch(e){} }
   if(state.dirty) { clearTimeout(saveTimer); doSave(); }
@@ -5560,44 +5793,94 @@ function toast(title,sub){
   setTimeout(function(){ t.remove(); },7000);
 }
 var bellMenu=document.getElementById("bellMenu");
+var activeNotifTab="list";
+function setNotifTab(tab){
+  activeNotifTab=(tab==="login")?"login":"list";
+  document.getElementById("notifTabList").setAttribute("aria-selected",String(activeNotifTab==="list"));
+  document.getElementById("notifTabLogin").setAttribute("aria-selected",String(activeNotifTab==="login"));
+  document.getElementById("feedList").classList.toggle("active",activeNotifTab==="list");
+  document.getElementById("loginFeedList").classList.toggle("active",activeNotifTab==="login");
+  document.getElementById("markRead").textContent=activeNotifTab==="login"?"Tandai login dibaca":"Tandai dibaca";
+  if(activeNotifTab==="list") renderFeed(); else renderLoginFeed();
+}
+document.getElementById("notifTabList").onclick=function(e){e.stopPropagation();setNotifTab("list");};
+document.getElementById("notifTabLogin").onclick=function(e){e.stopPropagation();setNotifTab("login");};
 document.getElementById("bellBtn").onclick=function(e){
   e.stopPropagation();
   bellMenu.classList.toggle("open");
-  if(bellMenu.classList.contains("open")) renderFeed();
+  if(bellMenu.classList.contains("open")){ renderFeed(); renderLoginFeed(); updateBadge(); }
 };
 document.addEventListener("click",function(e){
   if(!bellMenu.contains(e.target)) bellMenu.classList.remove("open");
 });
 document.getElementById("markRead").onclick=function(){
-  state.lastSeen=Date.now(); lsSet("jsmold:lastSeen",String(state.lastSeen));
-  renderFeed(); updateBadge();
+  if(activeNotifTab==="login"){
+    state.lastLoginSeen=Date.now(); lsSet("jsmold:lastLoginSeen",String(state.lastLoginSeen));
+    renderLoginFeed();
+  }else{
+    state.lastSeen=Date.now(); lsSet("jsmold:lastSeen",String(state.lastSeen));
+    renderFeed();
+  }
+  updateBadge();
 };
 document.getElementById("enableNotif").onclick=function(){
   try{
     if(!("Notification" in window)){ toast("Tidak didukung","Browser ini tidak punya notifikasi sistem."); return; }
     Notification.requestPermission().catch(function(){return "denied"}).then(function(p){
       toast(p==="granted"?"Notifikasi aktif":"Notifikasi ditolak",
-            p==="granted"?"Kamu akan diberi tahu saat ada perubahan.":"Pemberitahuan tetap muncul di dalam aplikasi.");
+            p==="granted"?"Kamu akan diberi tahu saat ada pembaruan list.":"Pemberitahuan tetap muncul di dalam aplikasi.");
     });
   }catch(err){ toast("Tidak bisa diaktifkan","Pemberitahuan tetap muncul di dalam aplikasi."); }
 };
-function notify(title,bodyTxt){
+function notifyListUpdate(title,bodyTxt){
   toast(title,bodyTxt);
   try{
     if(("Notification" in window) && Notification.permission==="granted"){
-      new Notification(title,{body:bodyTxt,tag:"jsmold"});
+      new Notification(title,{body:bodyTxt,tag:"jsmold-list"});
     }
   }catch(err){}
 }
+function notifyMember(title,bodyTxt){
+  toast(title,bodyTxt);
+}
+function recordMemberActivity(action,title,text){
+  if(!state.db || !state.me.name) return;
+  var payload={
+    action:action||"login",
+    title:title||"Aktivitas member",
+    text:text||"",
+    by:resolveMemberName(state.me.name)||state.me.name,
+    uid:state.me.id||"",
+    at:Date.now()
+  };
+  state.db.collection("memberActivities").add(payload).catch(function(err){
+    console.warn("Aktivitas member tidak tersimpan",err);
+  });
+}
+function loginActivityUnreadCount(){
+  var me=resolveMemberName(state.me.name)||state.me.name||"";
+  return state.loginFeed.filter(function(f){
+    return f.at>state.lastLoginSeen && f.by!==me;
+  }).length;
+}
+function listUnreadCount(){
+  return state.feed.filter(function(f){return f.at>state.lastSeen;}).length;
+}
 function updateBadge(){
-  var n=state.feed.filter(function(f){return f.at>state.lastSeen}).length;
+  var ln=listUnreadCount();
+  var lg=loginActivityUnreadCount();
+  var n=ln+lg;
   var b=document.getElementById("bellBadge");
   if(n>0){ b.hidden=false; b.textContent=n>9?"9+":String(n); } else b.hidden=true;
+  var lb=document.getElementById("listTabBadge");
+  if(lb){ lb.hidden=ln===0; lb.textContent=ln>9?"9+":String(ln); }
+  var gb=document.getElementById("loginTabBadge");
+  if(gb){ gb.hidden=lg===0; gb.textContent=lg>9?"9+":String(lg); }
 }
 function renderFeed(){
   var list=document.getElementById("feedList");
   list.innerHTML="";
-  if(!state.feed.length){ list.appendChild(el("div","empty","Belum ada perubahan dari anggota lain.")); return; }
+  if(!state.feed.length){ list.appendChild(el("div","empty","Belum ada pembaruan dari anggota lain.")); return; }
   state.feed.slice(0,30).forEach(function(f){
     var b=el("button","feeditem"+(f.at>state.lastSeen?" unread":""));
     b.type="button";
@@ -5612,12 +5895,55 @@ function renderFeed(){
     list.appendChild(b);
   });
 }
+function renderLoginFeed(){
+  var list=document.getElementById("loginFeedList");
+  list.innerHTML="";
+  if(!state.loginFeed.length){ list.appendChild(el("div","empty","Belum ada aktivitas login.")); return; }
+  state.loginFeed.slice(0,40).forEach(function(f){
+    var unread=f.at>state.lastLoginSeen && f.by!==(resolveMemberName(state.me.name)||state.me.name||"");
+    var b=el("div","feeditem login-feeditem"+(unread?" unread":""));
+    var av=el("span","av avcircle sm"); av.textContent=initials(f.by);
+    av.style.background=colorFromName(f.by);
+    b.appendChild(av);
+    var tx=el("div","tx");
+    tx.appendChild(el("b",null,f.title||((f.by||"Anggota")+" "+(f.action||"login"))));
+    tx.appendChild(el("span",null,(f.text||"")+" · "+timeAgo(f.at)));
+    b.appendChild(tx);
+    list.appendChild(b);
+  });
+}
 function timeAgo(ts){
   var s=Math.round((Date.now()-ts)/1000);
   if(s<60) return "baru saja";
   if(s<3600) return Math.round(s/60)+" mnt lalu";
   if(s<86400) return Math.round(s/3600)+" jam lalu";
   return Math.round(s/86400)+" hari lalu";
+}
+
+/* ───────────────────── member login activity subscription ───────────────────── */
+function subscribeMemberActivity(){
+  if(!state.db) return;
+  if(unsubLoginActivity){ try{unsubLoginActivity();}catch(e){} unsubLoginActivity=null; }
+  unsubLoginActivity=state.db.collection("memberActivities").orderBy("at","desc").limit(80).onSnapshot(function(snap){
+    var arr=[];
+    snap.docs.forEach(function(d){
+      var v=d.data()||{};
+      arr.push({
+        id:d.id,
+        action:String(v.action||"login"),
+        title:String(v.title||"Aktivitas member"),
+        text:String(v.text||""),
+        by:String(v.by||"Anggota"),
+        uid:String(v.uid||""),
+        at:Number(v.at)||0
+      });
+    });
+    state.loginFeed=arr;
+    renderLoginFeed();
+    updateBadge();
+  },function(err){
+    console.warn("Feed aktivitas login tidak tersedia",err);
+  });
 }
 
 /* ───────────────────── index subscription ───────────────────── */
@@ -5754,7 +6080,7 @@ function subscribeIndex(){
           state.feed.unshift(removedItem);
           state.feed=state.feed.slice(0,60);
           updateBadge();
-          notify(removedItem.title,removedText);
+          notifyListUpdate(removedItem.title,removedText);
           return;
         }
 
@@ -5778,7 +6104,7 @@ function subscribeIndex(){
         state.feed.unshift(item);
         state.feed=state.feed.slice(0,60);
         updateBadge();
-        notify(title,changeText);
+        notifyListUpdate(title,changeText);
       });
     }
 
@@ -5809,7 +6135,7 @@ function checkReminder(){
   document.getElementById("remSub").textContent="Untuk "+longDate(reminderTarget)+" belum ada satu pun item.";
   remDlg.returnValue="";
   remDlg.showModal();
-  notify("Pengingat jadwal berikutnya","Apakah ada rencana pickup / delivery untuk "+longDate(reminderTarget)+"?");
+  toast("Pengingat jadwal berikutnya","Apakah ada rencana pickup / delivery untuk "+longDate(reminderTarget)+"?");
 }
 remDlg.addEventListener("close",function(){
   var tmr=reminderTarget||key(addDays(new Date(),1));
@@ -5914,7 +6240,7 @@ function applyMe(){
   var guestLock=document.getElementById("guestLock");
   if(guestLock) guestLock.hidden=false;
   var changeBtn=document.getElementById("changeName");
-  if(changeBtn) changeBtn.textContent="Login";
+  if(changeBtn) changeBtn.textContent="Login Member";
   document.getElementById("meName").textContent="Tamu";
   var av=document.getElementById("meAvatar");
   av.textContent="?";
@@ -5969,7 +6295,7 @@ nameDlg.addEventListener("close",function(){
 
   if(!raw){
     document.getElementById("loginHint").textContent="User wajib diisi.";
-    toast("Login gagal","Masukkan user member.");
+    notifyMember("Login member gagal","Masukkan user member.");
     setTimeout(function(){askName("");},80);
     return;
   }
@@ -5977,7 +6303,7 @@ nameDlg.addEventListener("close",function(){
   var profile=resolveMemberProfile(raw);
   if(!profile){
     document.getElementById("loginHint").textContent="User tidak terdaftar.";
-    toast("Login gagal","User tidak terdaftar.");
+    notifyMember("Login member gagal","User tidak terdaftar.");
     setTimeout(function(){askName(raw);},120);
     return;
   }
@@ -5985,7 +6311,7 @@ nameDlg.addEventListener("close",function(){
   var keyName=loginCredentialKey(profile.short);
   if(LOGIN_CREDENTIALS[keyName]===undefined || pass!==LOGIN_CREDENTIALS[keyName]){
     document.getElementById("loginHint").textContent="Password salah. Coba lagi.";
-    toast("Login gagal","Password tidak sesuai.");
+    notifyMember("Login member gagal","Password tidak sesuai.");
     setTimeout(function(){askName(raw);},120);
     return;
   }
@@ -5997,10 +6323,10 @@ nameDlg.addEventListener("close",function(){
   renderConfirmBar();
   renderSheet();
 
-  toast(
-    "Login berhasil",
-    profile.short+(profile.readOnly?" · mode lihat saja":(profile.optional?" · viewer/helper":" · member engineering"))
-  );
+  var loginMode=profile.readOnly?"mode lihat saja":(profile.optional?"viewer/helper":"member engineering");
+  var loginText=profile.short+" · "+loginMode+" · "+longDate(today);
+  notifyMember("Login member berhasil",loginText);
+  recordMemberActivity("login",profile.short+" login berhasil",loginText);
 });
 
 // "Logout" = keluar dari sesi yang diingat, lalu minta kredensial lagi.
@@ -6012,6 +6338,9 @@ document.getElementById("changeName").onclick=function(){
   state.me.role="";
   state.canWrite=false;
   applyMe();
+  var logoutName=resolveMemberName(state.me.name)||state.me.name||"Member";
+  notifyMember("Logout member berhasil","Sesi member sudah ditutup.");
+  recordMemberActivity("logout",logoutName+" logout",logoutName+" keluar dari sesi member.");
   askName("");
 };
 
@@ -6057,6 +6386,7 @@ renderCalendar(); renderSheet(); renderTomorrow(); setPill("idle","Menghubungkan
     state.me.id=cred.user.uid;
     state.db=firebase.firestore();
     subscribeIndex();
+    subscribeMemberActivity();
     startRollingDashboard();
     selectDate(today);
     updateBadge();
@@ -6070,6 +6400,7 @@ renderCalendar(); renderSheet(); renderTomorrow(); setPill("idle","Menghubungkan
       renderConfirmBar();
       renderSheet();
       toast("Login otomatis",rememberedProfile.short+" · perangkat ini diingat");
+      recordMemberActivity("login",rememberedProfile.short+" login berhasil","Login otomatis · perangkat ini diingat");
     }else{
       askName(storedName?resolveMemberProfile(storedName)?.short:"");
     }
