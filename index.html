@@ -2328,6 +2328,7 @@ function formatMoldId(val) {
    5) List notifications are persisted in Firestore collection "notifications".
    6) Notification feed is restored after login/refresh and is shared across devices.
    7) Notification documents use collection "notifications" (order by numeric "at").
+   8) Owner-bucket save hardening: current member bucket is replaced only when its own rows changed.
    ─────────────────────────────────────────────────── */
 var MIN_DEL=17, MIN_PICK=17;
 var today=key(new Date());
@@ -4625,6 +4626,116 @@ function normalizeServerContributors(ref){
   });
 }
 
+/*
+  SAFE OWNER-BUCKET SAVE + LEGACY MIGRATION
+  -----------------------------------------
+  Some existing documents can contain owner-tagged rows in the old flat
+  delivery[] / pickup[] arrays (for example {_owner:"Eka"}) instead of in
+  deliveryByOwner.Eka / pickupByOwner.Eka. A normal save by another member
+  used to filter those rows out of the legacy arrays without migrating them,
+  which could make Eka's rows disappear after refresh.
+
+  This transaction always starts from the latest Firestore document, migrates
+  every owner-tagged flat row into the correct owner bucket, preserves all
+  other members' buckets, and replaces only the bucket of the member saving.
+*/
+function saveOwnerAwarePayload(ref,payload,currentOwner,replaceOwnerKinds){
+  replaceOwnerKinds=replaceOwnerKinds||{delivery:false,pickup:false};
+  return state.db.runTransaction(function(tx){
+    return tx.get(ref).then(function(snap){
+      var raw=snap.exists?(snap.data()||{}):{};
+      var write={};
+
+      /* Preserve ordinary top-level payload fields, but handle row storage
+         fields explicitly below so migration is atomic and race-safe. */
+      Object.keys(payload||{}).forEach(function(field){
+        if(field==="deliveryByOwner" || field==="pickupByOwner" ||
+           field==="delivery" || field==="pickup") return;
+        write[field]=payload[field];
+      });
+
+      ["delivery","pickup"].forEach(function(kind){
+        var ownerField=kind+"ByOwner";
+        var ownerMap={};
+
+        /* 1) Preserve every existing owner bucket from the latest server. */
+        var rawMap=raw[ownerField];
+        if(rawMap && typeof rawMap==="object"){
+          Object.keys(rawMap).forEach(function(ownerKey){
+            var normalizedOwner=ownerShort(ownerKey)||ownerKey;
+            var arr=Array.isArray(rawMap[ownerKey])?rawMap[ownerKey]:[];
+            ownerMap[normalizedOwner]=arr.map(function(r){
+              return Object.assign({},r,{_storage:"owner",_owner:normalizedOwner,_ownerOrder:ownerOrder(normalizedOwner)});
+            });
+          });
+        }
+
+        /* 2) Migrate old flat rows which already know their owner. */
+        var flat=Array.isArray(raw[kind])?raw[kind]:[];
+        flat.forEach(function(rawRow){
+          if(!rawRow || rowEmpty(rawRow)) return;
+          var row=Object.assign({},rawRow);
+          var rowOwn=rowOwner(row);
+          if(!rowOwn) return;
+          var targetOwner=ownerShort(rowOwn)||rowOwn;
+          if(!ownerMap[targetOwner]) ownerMap[targetOwner]=[];
+          var rid=String(row._id||"");
+          var exists=rid && ownerMap[targetOwner].some(function(existing){
+            return String(existing&&existing._id||"")===rid;
+          });
+          if(!exists){
+            row._storage="owner";
+            row._owner=targetOwner;
+            row._ownerOrder=ownerOrder(targetOwner);
+            ownerMap[targetOwner].push(row);
+          }
+        });
+
+        /* 3) Replace the current member's bucket ONLY when that member's
+              owner-owned data actually changed locally.
+
+              This is a critical safety guard: opening a date and changing
+              only another member's checklist must never write
+              deliveryByOwner.<currentMember> = [] or stale data. */
+        var incomingMap=payload[ownerField]||{};
+        if(replaceOwnerKinds[kind]){
+          ownerMap[currentOwner]=Array.isArray(incomingMap[currentOwner])
+            ? incomingMap[currentOwner].map(function(r){
+                return Object.assign({},r,{_storage:"owner",_owner:currentOwner,_ownerOrder:ownerOrder(currentOwner)});
+              })
+            : [];
+        }
+
+        /* Stable ordering inside each bucket. */
+        Object.keys(ownerMap).forEach(function(o){
+          ownerMap[o].sort(function(a,b){
+            return rowSequence(a)-rowSequence(b) ||
+              rowCreatedAt(a)-rowCreatedAt(b) ||
+              String(a._id||"").localeCompare(String(b._id||""));
+          });
+        });
+
+        write[ownerField]=ownerMap;
+
+        /* 4) Keep only truly ownerless legacy rows in the old flat field.
+              If local legacy data changed, honor that intentional edit/delete. */
+        if(Object.prototype.hasOwnProperty.call(payload,kind)){
+          write[kind]=Array.isArray(payload[kind])?payload[kind]:[];
+        }else{
+          write[kind]=flat.filter(function(rawRow){
+            return rawRow && !rowEmpty(rawRow) && !rowOwner(rawRow);
+          }).map(function(rawRow){
+            return Object.assign({},rawRow,{_storage:"legacy"});
+          });
+        }
+      });
+
+      tx.set(ref,write,{merge:true});
+      return write;
+    });
+  });
+}
+
 function doSave(){
   if(!state.db) return;
 
@@ -4662,6 +4773,17 @@ function doSave(){
     this date even if the user changes the selected date while saving.
   */
   var sharedStatusChanges=collectSharedStatusChanges(state.baseSheet,state.sheet);
+
+  /*
+    Replace an owner's bucket only when that owner's own rows changed.
+    This makes saves safe even when the selected date contains rows owned
+    by Eka/Bayu/Sultan/Ferry and the current member is only checking status.
+  */
+  var replaceOwnerKinds={
+    delivery:sheetBucketChanged(state.baseSheet,state.sheet,"delivery",owner),
+    pickup:sheetBucketChanged(state.baseSheet,state.sheet,"pickup",owner)
+  };
+
   var pendingDeletesForSave=(state.pendingDeletes||[]).filter(function(d){
     return String(d.date||"")===String(dateKey);
   }).map(function(d){return Object.assign({},d);});
@@ -4753,16 +4875,10 @@ function doSave(){
   );
 
   /*
-    Merge nested owner maps. Each save writes only this member's bucket;
-    Firestore merge preserves sibling owner fields.
+    Save through a transaction so old owner-tagged flat rows are migrated
+    atomically and other members' owner buckets are preserved.
   */
-  var savePromise;
-
-  if(state.sheetExists===false){
-    savePromise=ref.set(payload,{merge:true});
-  }else{
-    savePromise=ref.set(payload,{merge:true});
-  }
+  var savePromise=saveOwnerAwarePayload(ref,payload,owner,replaceOwnerKinds);
 
   savePromise
   .then(function(){
