@@ -2319,7 +2319,12 @@ function formatMoldId(val) {
   return val;
 }
 
-/* ───────────────────── state ───────────────────── */
+/* ───────────────────── state ─────────────────────
+   PATCH 2026-09-28
+   1) Explicit transactional delete by row _id.
+   2) Cross-member delivery/pickup status persistence.
+   3) Leave metadata is persisted together with shared confirmation data.
+   ─────────────────────────────────────────────────── */
 var MIN_DEL=17, MIN_PICK=17;
 var today=key(new Date());
 var state={
@@ -2335,6 +2340,9 @@ var state={
   loginFeed:[], lastLoginSeen:+lsGet("jsmold:lastLoginSeen",0)||0,
   mobile:window.matchMedia("(max-width: 900px)").matches,
   dirty:false, saving:false, pending:false, pendingRemote:null, createdRowIds:{}, sheetExists:false,
+  /* Explicit server-side deletes. This prevents an old/realtime snapshot from
+     resurrecting a row after the user intentionally removed it. */
+  pendingDeletes:[],
   dashboardDocs:{}, dashboardReady:false, dashboardUnsub:null, dashboardFetchToken:0,
   batch:{
     open:false, loaded:false, kind:"delivery", method:"paste", rows:[], selected:-1,
@@ -3078,8 +3086,46 @@ function removeRow(kind,i){
     toast("Hanya bisa dilihat","Akun ini tidak punya akses ubah.");
     return;
   }
-  state.sheet[kind].splice(i,1);
-  markDirty(); renderSheet();
+
+  var rows=state.sheet[kind]||[];
+  var r=rows[i];
+  if(!r) return;
+
+  /*
+    Safety guard for desktop and especially mobile:
+    the row is NOT touched until the user explicitly confirms the deletion.
+    This is intentionally native confirm() so it works reliably on phones
+    without requiring an additional modal component or extra DOM.
+  */
+  var actionLabel=(kind==="delivery")?"delivery":"pickup";
+  var moldLabel=[r.moldId||"",r.moldName||""]
+    .filter(function(v){return String(v).trim()!=="";})
+    .join(" · ");
+  var detail=moldLabel?"\nMold: "+moldLabel:"";
+  var confirmed=window.confirm(
+    "Apakah Anda yakin ingin menghapus baris "+actionLabel+" ini?"
+    +detail
+    +"\n\nData yang dihapus akan dihilangkan dari schedule setelah disimpan."
+  );
+
+  if(!confirmed) return;
+
+  /*
+    Keep a durable delete intent. The UI updates immediately, while doSave()
+    later removes the same stable _id from the latest Firestore document.
+  */
+  if(r._id){
+    state.pendingDeletes.push({
+      date:state.sel,
+      kind:kind,
+      id:String(r._id),
+      owner:rowOwner(r)||""
+    });
+  }
+
+  rows.splice(i,1);
+  markDirty();
+  renderSheet();
 }
 /* addRow uses stable _id values; Firestore transaction merges simultaneous additions. */
 /* Blank template rows are not persisted; each added row gets a unique _id. */
@@ -4328,6 +4374,191 @@ function atomicAppendNewRows(ref,baseSheet,localSheet){
   return ref.set(payload,{merge:true});
 }
 
+/*
+  ──────────────────────────────────────────────────────────────────────────
+  SHARED STATUS + EXPLICIT DELETE PATCH
+  --------------------------------------------------------------------------
+  Row ownership is still protected:
+    - owner can edit the whole owner bucket;
+    - any writable member can change the shared delivery/pickup status;
+    - deletion is explicit by stable _id and processed against the latest
+      Firestore document, so realtime/stale snapshots cannot resurrect it.
+*/
+function collectSharedStatusChanges(baseSheet,localSheet){
+  var out=[];
+  var seen={};
+
+  ["delivery","pickup"].forEach(function(kind){
+    var bm=rowMap((baseSheet&&baseSheet[kind])||[]);
+    var lm=rowMap((localSheet&&localSheet[kind])||[]);
+
+    Object.keys(lm).forEach(function(id){
+      var local=lm[id];
+      var base=bm[id];
+
+      /* Newly-created rows are saved through their owner's bucket. */
+      if(!base || !local) return;
+
+      var oldStatus=String(base.status||"");
+      var newStatus=String(local.status||"");
+      if(oldStatus===newStatus) return;
+
+      var owner=rowOwner(local);
+      var k=kind+"|"+id;
+      if(seen[k]) return;
+      seen[k]=true;
+
+      out.push({kind:kind,id:id,owner:owner,status:newStatus});
+    });
+  });
+
+  return out;
+}
+
+function applySharedStatusChanges(ref,changes){
+  if(!changes || !changes.length) return Promise.resolve();
+
+  return state.db.runTransaction(function(tx){
+    return tx.get(ref).then(function(snap){
+      if(!snap.exists) return;
+
+      var raw=snap.data()||{};
+      var patchByKind={};
+
+      changes.forEach(function(ch){
+        var field=ch.kind+"ByOwner";
+        var owner=ch.owner||"";
+
+        if(owner){
+          if(!patchByKind[field]) patchByKind[field]={};
+          if(Object.prototype.hasOwnProperty.call(patchByKind[field],owner)) return;
+
+          var ownerMap=raw[field] && typeof raw[field]==="object" ? raw[field] : {};
+          var arr=Array.isArray(ownerMap[owner])
+            ? ownerMap[owner].map(function(r){return Object.assign({},r);})
+            : [];
+
+          changes.filter(function(x){
+            return x.kind===ch.kind && x.owner===owner;
+          }).forEach(function(x){
+            arr.forEach(function(r){
+              if(r && String(r._id||"")===String(x.id||"")){
+                r.status=x.status||"";
+              }
+            });
+          });
+
+          patchByKind[field][owner]=arr;
+        }else{
+          /* Backward-compatible patch for old flat/legacy rows. */
+          var legacy=Array.isArray(raw[ch.kind])
+            ? raw[ch.kind].map(function(r){return Object.assign({},r);})
+            : [];
+
+          legacy.forEach(function(r){
+            if(r && String(r._id||"")===String(ch.id||"")){
+              r.status=ch.status||"";
+            }
+          });
+
+          patchByKind[ch.kind]=legacy;
+        }
+      });
+
+      var finalPatch={};
+      Object.keys(patchByKind).forEach(function(field){
+        finalPatch[field]=patchByKind[field];
+      });
+      if(Object.keys(finalPatch).length){
+        tx.set(ref,finalPatch,{merge:true});
+      }
+    });
+  });
+}
+
+function applyExplicitDeletes(ref,deletes){
+  if(!deletes || !deletes.length) return Promise.resolve();
+
+  return state.db.runTransaction(function(tx){
+    return tx.get(ref).then(function(snap){
+      if(!snap.exists) return;
+
+      var raw=snap.data()||{};
+      var ownerPatches={delivery:{},pickup:{}};
+      var legacyPatches={delivery:null,pickup:null};
+      var touchedOwnerFields={delivery:false,pickup:false};
+      var touchedLegacyFields={delivery:false,pickup:false};
+
+      deletes.forEach(function(item){
+        var kind=item.kind;
+        var id=String(item.id||"");
+        if(!id || (kind!=="delivery" && kind!=="pickup")) return;
+
+        var owner=ownerShort(item.owner||"");
+
+        if(owner){
+          var field=kind+"ByOwner";
+          var map=raw[field] && typeof raw[field]==="object" ? raw[field] : {};
+
+          if(!Object.prototype.hasOwnProperty.call(ownerPatches[kind],owner)){
+            ownerPatches[kind][owner]=Array.isArray(map[owner])
+              ? map[owner].map(function(r){return Object.assign({},r);})
+              : [];
+          }
+
+          ownerPatches[kind][owner]=ownerPatches[kind][owner].filter(function(r){
+            return !r || String(r._id||"")!==id;
+          });
+          touchedOwnerFields[kind]=true;
+        }else{
+          if(legacyPatches[kind]===null){
+            legacyPatches[kind]=Array.isArray(raw[kind])
+              ? raw[kind].map(function(r){return Object.assign({},r);})
+              : [];
+          }
+
+          legacyPatches[kind]=legacyPatches[kind].filter(function(r){
+            return !r || String(r._id||"")!==id;
+          });
+          touchedLegacyFields[kind]=true;
+        }
+      });
+
+      var finalPatch={};
+
+      ["delivery","pickup"].forEach(function(kind){
+        var ownerField=kind+"ByOwner";
+
+        if(touchedOwnerFields[kind]){
+          finalPatch[ownerField]=ownerPatches[kind];
+        }
+
+        if(touchedLegacyFields[kind]){
+          finalPatch[kind]=legacyPatches[kind]||[];
+        }
+      });
+
+      if(Object.keys(finalPatch).length){
+        tx.set(ref,finalPatch,{merge:true});
+      }
+    });
+  });
+}
+
+function clearPendingDeletes(deletes){
+  if(!deletes || !deletes.length) return;
+
+  var keys={};
+  deletes.forEach(function(d){
+    keys[String(d.date||"")+"|"+String(d.kind||"")+"|"+String(d.id||"")]=true;
+  });
+
+  state.pendingDeletes=(state.pendingDeletes||[]).filter(function(d){
+    var k=String(d.date||"")+"|"+String(d.kind||"")+"|"+String(d.id||"");
+    return !keys[k];
+  });
+}
+
 function doSave(){
   if(!state.db) return;
 
@@ -4348,6 +4579,15 @@ function doSave(){
 
   var dateKey=state.sheet.date;
   var ref=state.db.doc("sheets/"+dateKey);
+
+  /*
+    Capture these intents before the async save starts. This remains tied to
+    this date even if the user changes the selected date while saving.
+  */
+  var sharedStatusChanges=collectSharedStatusChanges(state.baseSheet,state.sheet);
+  var pendingDeletesForSave=(state.pendingDeletes||[]).filter(function(d){
+    return String(d.date||"")===String(dateKey);
+  }).map(function(d){return Object.assign({},d);});
 
   /*
     IMPORTANT — OWNER BUCKET SAVE
@@ -4425,6 +4665,9 @@ function doSave(){
   payload.confirmed=canonicalContributorList(
     (base.confirmed||[]).concat(state.sheet.confirmed||[],[owner])
   );
+  payload.leave=canonicalContributorList(
+    (base.leave||[]).concat(state.sheet.leave||[])
+  );
   // Keep the in-memory sheet aligned with the exact confirmation payload.
   // This prevents a realtime refresh from briefly showing the current
   // member as pending after a successful save.
@@ -4446,8 +4689,27 @@ function doSave(){
     savePromise=ref.set(payload,{merge:true});
   }
 
-  savePromise.then(function(){
+  savePromise
+  .then(function(){
+    /*
+      Shared checklist changes are persisted separately from owner fields.
+      This lets Eka confirm a Sultan-created row without overwriting
+      Sultan's Area/Company/PIC/Mold fields.
+    */
+    return applySharedStatusChanges(ref,sharedStatusChanges);
+  })
+  .then(function(){
+    /*
+      Explicit deletes run against the latest Firestore document after the
+      normal save. A stale/realtime snapshot therefore cannot resurrect an
+      intentionally deleted row.
+    */
+    return applyExplicitDeletes(ref,pendingDeletesForSave);
+  })
+  .then(function(){
     state.saving=false;
+
+    clearPendingDeletes(pendingDeletesForSave);
 
     /*
       The local sheet remains authoritative for the fields just saved.
