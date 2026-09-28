@@ -2320,10 +2320,14 @@ function formatMoldId(val) {
 }
 
 /* ───────────────────── state ─────────────────────
-   PATCH 2026-09-28
+   PATCH 2026-09-28/29
    1) Explicit transactional delete by row _id.
    2) Cross-member delivery/pickup status persistence.
    3) Leave metadata is persisted together with shared confirmation data.
+   4) "Diisi oleh" now derives from actual row ownership; checklist editors do not become authors.
+   5) List notifications are persisted in Firestore collection "notifications".
+   6) Notification feed is restored after login/refresh and is shared across devices.
+   7) Notification documents use collection "notifications" (order by numeric "at").
    ─────────────────────────────────────────────────── */
 var MIN_DEL=17, MIN_PICK=17;
 var today=key(new Date());
@@ -2338,6 +2342,7 @@ var state={
   db:null,
   feed:[], lastSeen:+lsGet("jsmold:lastSeen",0)||0,
   loginFeed:[], lastLoginSeen:+lsGet("jsmold:lastLoginSeen",0)||0,
+  unsubListNotifications:null,
   mobile:window.matchMedia("(max-width: 900px)").matches,
   dirty:false, saving:false, pending:false, pendingRemote:null, createdRowIds:{}, sheetExists:false,
   /* Explicit server-side deletes. This prevents an old/realtime snapshot from
@@ -2484,6 +2489,55 @@ function rawRowsForKind(raw,kind,dateKey){
   return mergeUniqueRows(legacy,ownerRows);
 }
 
+function sheetHasLegacyRows(sheet){
+  if(!sheet) return false;
+  return ["delivery","pickup"].some(function(kind){
+    return (sheet[kind]||[]).some(function(r){
+      return r && !rowEmpty(r) && !rowOwner(r);
+    });
+  });
+}
+
+/*
+  "Diisi oleh" harus menunjukkan member yang benar-benar membuat/memiliki
+  baris pada sheet, bukan member yang hanya melakukan checklist atau
+  mengedit baris milik orang lain.
+
+  Owner buckets adalah sumber kebenaran untuk row baru. Metadata contributors
+  lama tetap dipertahankan hanya ketika masih ada legacy rows yang tidak punya
+  owner, karena untuk legacy kita memang tidak bisa mengetahui pembuat aslinya.
+*/
+function contributorsFromRows(sheet, fallbackMetadata){
+  sheet=sheet||{};
+  var owners=[];
+
+  ["delivery","pickup"].forEach(function(kind){
+    (sheet[kind]||[]).forEach(function(r){
+      var owner=rowOwner(r);
+      if(isCoreMember(owner) && owners.indexOf(owner)===-1){
+        owners.push(owner);
+      }
+    });
+  });
+
+  owners.sort(function(a,b){return ownerOrder(a)-ownerOrder(b);});
+
+  if(sheetHasLegacyRows(sheet)){
+    return canonicalContributorList(
+      owners.concat(Array.isArray(fallbackMetadata)?fallbackMetadata:(sheet.contributors||[]))
+    );
+  }
+
+  if(owners.length){
+    return canonicalContributorList(owners);
+  }
+
+  // Nihil / legacy-only sheet: preserve existing metadata.
+  return canonicalContributorList(
+    Array.isArray(fallbackMetadata)?fallbackMetadata:(sheet.contributors||[])
+  );
+}
+
 function normalize(raw,dateKey){
   var s=blank(dateKey);
   if(!raw) return s;
@@ -2492,7 +2546,8 @@ function normalize(raw,dateKey){
   s.nihil=!!raw.nihil;
   s.prepareBy=raw.prepareBy||""; s.checkedBy=raw.checkedBy||""; s.approvalBy=raw.approvalBy||"";
   s.updatedAt=raw.updatedAt||""; s.updatedByName=raw.updatedByName||""; s.updatedByUid=raw.updatedByUid||"";
-  s.contributors=canonicalContributorList(Array.isArray(raw.contributors)?raw.contributors.filter(Boolean):[]);
+  var rawContributors=canonicalContributorList(Array.isArray(raw.contributors)?raw.contributors.filter(Boolean):[]);
+  s.contributors=contributorsFromRows(s,rawContributors);
   s.confirmed=Array.isArray(raw.confirmed)?raw.confirmed.filter(Boolean):[];
   s.leave=Array.isArray(raw.leave)?raw.leave.filter(Boolean):[];
   return s;
@@ -2873,7 +2928,7 @@ function renderSheet(){
   else if(state.sel===key(addDays(new Date(),1))) kick.textContent="Lembar besok";
   else kick.textContent="Lembar tanggal";
   var cl=document.getElementById("contribLine");
-  var names=canonicalContributorList(state.sheet.contributors||[]);
+  var names=contributorsFromRows(state.sheet,state.sheet.contributors||[]);
   state.sheet.contributors=names;
   cl.textContent=names.length?("Diisi oleh: "+names.join(", ")):"";
   renderConfirmBar();
@@ -4259,12 +4314,8 @@ function confirmCurrentMemberOnEdit(){
   var current=resolveMemberName(state.me.name);
   if(!isCoreMember(current)) return;
 
-  // Begitu member melakukan perubahan nyata pada lembar, member tersebut
-  // dianggap sudah mengisi/meninjau tanggal ini. Pastikan status lokal
-  // langsung menjadi hijau dan tetap aman saat payload disimpan.
-  state.sheet.contributors=canonicalContributorList(
-    (state.sheet.contributors||[]).concat([current])
-  );
+  // Confirmation adalah metadata terpisah dari ownership.
+  // Checklist/edit member lain tidak boleh mengubah "Diisi oleh".
   state.sheet.confirmed=canonicalContributorList(
     (state.sheet.confirmed||[]).concat([current])
   );
@@ -4287,13 +4338,10 @@ function setPill(st,txt){
 function body(source){
   var s=source||state.sheet;
 
-  // Only the four core members appear in "Diisi oleh".
-  var contributors=canonicalContributorList(s.contributors||[]);
+  // "Diisi oleh" berasal dari owner row. Member yang hanya melakukan
+  // checklist/edit terhadap row orang lain tidak ditambahkan sebagai author.
   var currentShort=resolveMemberName(state.me.name);
-
-  if(isCoreMember(currentShort) && contributors.indexOf(currentShort)===-1){
-    contributors.push(currentShort);
-  }
+  var contributors=contributorsFromRows(s,s.contributors||[]);
   s.contributors=contributors;
 
   var confirmed=(s.confirmed||[]).map(resolveMemberName).filter(function(n){
@@ -4559,6 +4607,24 @@ function clearPendingDeletes(deletes){
   });
 }
 
+function normalizeServerContributors(ref){
+  return state.db.runTransaction(function(tx){
+    return tx.get(ref).then(function(snap){
+      if(!snap.exists) return [];
+
+      var raw=snap.data()||{};
+      var sheet=normalize(raw,raw.date||state.sheet.date);
+      var derived=contributorsFromRows(
+        sheet,
+        Array.isArray(raw.contributors)?raw.contributors.filter(Boolean):[]
+      );
+
+      tx.set(ref,{contributors:derived},{merge:true});
+      return derived;
+    });
+  });
+}
+
 function doSave(){
   if(!state.db) return;
 
@@ -4579,6 +4645,17 @@ function doSave(){
 
   var dateKey=state.sheet.date;
   var ref=state.db.doc("sheets/"+dateKey);
+  var saveAt=Date.now();
+  var saveIso=new Date(saveAt).toISOString();
+  var listChangeText=notificationDiff(state.baseSheet,state.sheet);
+  var listNotification={
+    date:dateKey,
+    by:resolveMemberName(state.me.name)||"Anggota",
+    uid:String(state.me.id||"anon"),
+    at:saveAt,
+    title:(resolveMemberName(state.me.name)||"Anggota")+" "+listChangeText+" · "+shortDate(dateKey),
+    text:listChangeText
+  };
 
   /*
     Capture these intents before the async save starts. This remains tied to
@@ -4653,15 +4730,13 @@ function doSave(){
   });
 
   payload.date=dateKey;
-  payload.updatedAt=new Date().toISOString();
+  payload.updatedAt=saveIso;
   payload.updatedByName=resolveMemberName(state.me.name)||"Anggota";
   payload.updatedByUid=state.me.id||"anon";
 
   // Contributors / confirmation are set-like. Merge with the current local
   // values, but do not clear another member's confirmation.
-  payload.contributors=canonicalContributorList(
-    (base.contributors||[]).concat(state.sheet.contributors||[],[owner])
-  );
+  payload.contributors=contributorsFromRows(state.sheet,state.sheet.contributors||[]);
   payload.confirmed=canonicalContributorList(
     (base.confirmed||[]).concat(state.sheet.confirmed||[],[owner])
   );
@@ -4707,9 +4782,28 @@ function doSave(){
     return applyExplicitDeletes(ref,pendingDeletesForSave);
   })
   .then(function(){
+    /*
+      Rebuild contributor metadata from the latest server-side owner rows.
+      This both fixes old/stale contributor metadata and prevents one member
+      from overwriting another member's author entry during concurrent saves.
+    */
+    return normalizeServerContributors(ref);
+  })
+  .then(function(serverContributors){
+    /*
+      Persist the list notification only after the actual sheet operation
+      (including explicit cross-member deletes) has completed.
+    */
+    return persistListNotification(listNotification).then(function(){
+      return serverContributors;
+    });
+  })
+  .then(function(serverContributors){
     state.saving=false;
 
     clearPendingDeletes(pendingDeletesForSave);
+
+    if(Array.isArray(serverContributors)) state.sheet.contributors=serverContributors.slice();
 
     /*
       The local sheet remains authoritative for the fields just saved.
@@ -6105,6 +6199,89 @@ function notifyListUpdate(title,bodyTxt){
 function notifyMember(title,bodyTxt){
   toast(title,bodyTxt);
 }
+
+/* ───────────── persistent list notifications (Firestore) ─────────────
+   Notification list is intentionally stored outside the sheet documents so
+   old updates survive refresh, device changes, and a new member login.
+   The document id is deterministic, so multiple clients can safely publish
+   the same update without creating duplicate feed entries.
+   Collection: notifications
+   ───────────────────────────────────────────────────────────────────── */
+function notificationHash(text){
+  text=String(text||"");
+  var h=2166136261;
+  for(var i=0;i<text.length;i++){
+    h^=text.charCodeAt(i);
+    h=Math.imul(h,16777619);
+  }
+  return (h>>>0).toString(36);
+}
+function notificationEventId(item){
+  item=item||{};
+  var seed=[
+    String(item.date||""),
+    String(item.uid||""),
+    String(item.at||""),
+    String(item.text||"")
+  ].join("|");
+  return "list_"+notificationHash(seed);
+}
+function persistListNotification(item){
+  if(!state.db || !item) return Promise.resolve();
+  var at=Number(item.at)||Date.now();
+  var uid=String(item.uid||"");
+  var by=String(item.by||"Anggota");
+  var text=String(item.text||"");
+  var payload={
+    type:"list-update",
+    date:String(item.date||""),
+    by:by,
+    uid:uid,
+    at:at,
+    title:String(item.title||""),
+    text:text
+  };
+  var id=item.eventId||notificationEventId({date:item.date,uid:uid,at:at,text:text});
+  return state.db.collection("notifications").doc(id).set(payload,{merge:true})
+    .catch(function(err){
+      console.warn("Notifikasi list tidak tersimpan di Firestore",err);
+    });
+}
+function subscribeListNotifications(){
+  if(!state.db) return;
+  if(state.unsubListNotifications){
+    try{state.unsubListNotifications();}catch(e){}
+    state.unsubListNotifications=null;
+  }
+  state.unsubListNotifications=state.db.collection("notifications")
+    .orderBy("at","desc")
+    .limit(120)
+    .onSnapshot(function(snap){
+      var arr=[];
+      snap.docs.forEach(function(d){
+        var v=d.data()||{};
+        if(String(v.type||"")!=="list-update") return;
+        arr.push({
+          id:d.id,
+          eventId:d.id,
+          date:String(v.date||""),
+          by:String(v.by||"Anggota"),
+          uid:String(v.uid||""),
+          at:Number(v.at)||0,
+          title:String(v.title||"Aktivitas list"),
+          text:String(v.text||"")
+        });
+      });
+      state.feed=arr;
+      renderFeed();
+      updateBadge();
+    },function(err){
+      console.warn("Feed notifikasi list tidak tersedia",err);
+      // Keep the UI usable even when Firestore security rules are not yet
+      // updated. The login activity feed remains independent.
+    });
+}
+
 function recordMemberActivity(action,title,text){
   if(!state.db || !state.me.name) return;
   var payload={
@@ -6125,8 +6302,17 @@ function loginActivityUnreadCount(){
     return f.at>state.lastLoginSeen && f.by!==me;
   }).length;
 }
+function currentMemberShortName(){
+  return resolveMemberName(state.me.name)||state.me.name||"";
+}
+function visibleListFeed(){
+  var me=currentMemberShortName();
+  return state.feed.filter(function(f){
+    return !me || String(f.by||"")!==String(me);
+  });
+}
 function listUnreadCount(){
-  return state.feed.filter(function(f){return f.at>state.lastSeen;}).length;
+  return visibleListFeed().filter(function(f){return f.at>state.lastSeen;}).length;
 }
 function updateBadge(){
   var ln=listUnreadCount();
@@ -6142,8 +6328,9 @@ function updateBadge(){
 function renderFeed(){
   var list=document.getElementById("feedList");
   list.innerHTML="";
-  if(!state.feed.length){ list.appendChild(el("div","empty","Belum ada pembaruan dari anggota lain.")); return; }
-  state.feed.slice(0,30).forEach(function(f){
+  var feed=visibleListFeed();
+  if(!feed.length){ list.appendChild(el("div","empty","Belum ada pembaruan dari anggota lain.")); return; }
+  feed.slice(0,40).forEach(function(f){
     var b=el("button","feeditem"+(f.at>state.lastSeen?" unread":""));
     b.type="button";
     var av=el("span","av avcircle sm"); av.textContent=initials(f.by);
@@ -6339,9 +6526,9 @@ function subscribeIndex(){
             title:removedNm+" "+removedText+" · "+shortDate(dateKey),
             text:removedText
           };
-          state.feed.unshift(removedItem);
-          state.feed=state.feed.slice(0,60);
-          updateBadge();
+          // The deleting client already persists this event in doSave().
+          // Other clients only need the immediate toast here; the durable
+          // feed is loaded from Firestore by subscribeListNotifications().
           notifyListUpdate(removedItem.title,removedText);
           return;
         }
@@ -6359,13 +6546,14 @@ function subscribeIndex(){
         var item={
           date:dateKey,
           by:nm,
+          uid:String(v.updatedByUid||""),
           at:at,
           title:title,
           text:changeText
         };
-        state.feed.unshift(item);
-        state.feed=state.feed.slice(0,60);
-        updateBadge();
+        // Idempotent Firestore write: if several clients observe the same
+        // sheet change, they all target the same notification document.
+        persistListNotification(item);
         notifyListUpdate(title,changeText);
       });
     }
@@ -6584,6 +6772,9 @@ nameDlg.addEventListener("close",function(){
   lsSet("jsmold_remembered_user", profile.short);
   renderConfirmBar();
   renderSheet();
+  renderFeed();
+  renderLoginFeed();
+  updateBadge();
 
   var loginMode=profile.readOnly?"mode lihat saja":(profile.optional?"viewer/helper":"member engineering");
   var loginText=profile.short+" · "+loginMode+" · "+longDate(today);
@@ -6600,6 +6791,9 @@ document.getElementById("changeName").onclick=function(){
   state.me.role="";
   state.canWrite=false;
   applyMe();
+  renderFeed();
+  renderLoginFeed();
+  updateBadge();
   var logoutName=resolveMemberName(state.me.name)||state.me.name||"Member";
   notifyMember("Logout member berhasil","Sesi member sudah ditutup.");
   recordMemberActivity("logout",logoutName+" logout",logoutName+" keluar dari sesi member.");
@@ -6647,6 +6841,7 @@ renderCalendar(); renderSheet(); renderTomorrow(); setPill("idle","Menghubungkan
   firebase.auth().signInAnonymously().then(function(cred){
     state.me.id=cred.user.uid;
     state.db=firebase.firestore();
+    subscribeListNotifications();
     subscribeIndex();
     subscribeMemberActivity();
     startRollingDashboard();
@@ -6661,6 +6856,9 @@ renderCalendar(); renderSheet(); renderTomorrow(); setPill("idle","Menghubungkan
       applyMemberProfile(rememberedProfile);
       renderConfirmBar();
       renderSheet();
+      renderFeed();
+      renderLoginFeed();
+      updateBadge();
       toast("Login otomatis",rememberedProfile.short+" · perangkat ini diingat");
       recordMemberActivity("login",rememberedProfile.short+" login berhasil","Login otomatis · perangkat ini diingat");
     }else{
